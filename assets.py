@@ -16,9 +16,9 @@ light_grey = (200,200,200)  # color for assets
 bg_color = pygame.Color('black') # black background
 
 # Game Rectangles
-ball = pygame.Rect(screen_width / 2 - 15, screen_height / 2 - 15, 30, 30) # set initial position of ball
-player = pygame.Rect(screen_width - 20, screen_height / 2 - 70, 10,140) # set initial position of player1, rhs
-opponent = pygame.Rect(10, screen_height / 2 - 70, 10,140) # set initial position of player2
+ball = pygame.Rect(int(screen_width / 2 - 15), int(screen_height / 2 - 15), 30, 30) # set initial position of ball
+player = pygame.Rect(int(screen_width - 20), int(screen_height / 2 - 70), 10,140) # set initial position of player1, rhs
+opponent = pygame.Rect(10, int(screen_height / 2 - 70), 10,140) # set initial position of player2
 
 if __name__ == "__main__": 
     # allow input, currently only allow quit input
