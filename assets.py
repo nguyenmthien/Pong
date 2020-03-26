@@ -1,3 +1,5 @@
+"""Assets for game
+"""
 import pygame
 import sys
 
