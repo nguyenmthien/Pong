@@ -5,6 +5,11 @@ screen_width = 800
 screen_height = 600
 FPS = 60
 
+player_speed = 0 #TODO: change redundant variable name into class methods
+opponent_speed = 7
+ball_speed_x = 7
+ball_speed_y = 7
+
 # Game Rectangles
 ball = pygame.Rect(int(screen_width / 2 - 15), int(screen_height / 2 - 15), 30, 30) # set initial position of ball
 player = pygame.Rect(int(screen_width - 20), int(screen_height / 2 - 70), 10,140) # set initial position of player1, rhs
@@ -14,6 +19,7 @@ class color:
     light_grey = (200,200,200)  # color for assets
     bg_color = (0, 0, 0)        # black background
 
+
 def setup():
     """Setup the screen and clock"""
     global screen, clock
@@ -22,12 +28,6 @@ def setup():
     screen = pygame.display.set_mode((screen_width,screen_height)) # screen display 
     pygame.display.set_caption('Pong')  #caption
 
-def update_input():
-    """Update pygame events"""
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
 
 def draw_playing_field():
     """Draw the field of the game"""
@@ -42,5 +42,4 @@ def draw_playing_field():
 
 if __name__ == '__main__':
     setup()
-    update_input()
     draw_playing_field()

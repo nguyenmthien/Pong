@@ -6,23 +6,23 @@ import assets
 import pygame
 
 
-def ball_animation():
-    '''Animation and logic of ball'''
-    global ball_speed_x, ball_speed_y
-    
-    assets.ball.x += ball_speed_x
-    assets.ball.y += ball_speed_y
+def ball():
+    """Animation and logic of ball"""
 
-    if assets.ball.top <= 0 or ball.bottom >= screen_height:
-        ball_speed_y *= -1
-    if assets.ball.left <= 0 or ball.right >= screen_width:
+    assets.ball.x += assets.ball_speed_x
+    assets.ball.y += assets.ball_speed_y
+
+    if assets.ball.top <= 0 or assets.ball.bottom >= assets.screen_height:
+        assets.ball_speed_y *= -1
+    if assets.ball.left <= 0 or assets.ball.right >= assets.screen_width:
         ball_start()
 
-    if ball.colliderect(player) or ball.colliderect(opponent):
-        ball_speed_x *= -1
+    if assets.ball.colliderect(assets.player) or assets.ball.colliderect(assets.opponent):
+        assets.ball_speed_x *= -1
 
-def player_animation():
-    assets.player.y += player_speed
+def player():
+    """Animation of player"""
+    assets.player.y += assets.player_speed
 
     if assets.player.top <= 0:
         player.top = 0
@@ -30,21 +30,20 @@ def player_animation():
         player.bottom = assets.screen_height
 
 def ball_start():
-    global ball_speed_x, ball_speed_y
-
+    """Replace the ball to the origin"""
     assets.ball.center = (assets.screen_width/2, assets.screen_height/2)
-    ball_speed_y *= random.choice((1,-1))
-    ball_speed_x *= random.choice((1,-1))
+    assets.ball_speed_y *= random.choice((1,-1))
+    assets.ball_speed_x *= random.choice((1,-1))
 
 def opponent_ai():
-    if asets.opponent.top < assets.ball.y:
-        assets.opponent.y += opponent_speed
+    if assets.opponent.top < assets.ball.y:
+        assets.opponent.y += assets.opponent_speed
     if assets.opponent.bottom > assets.ball.y:
-        assets.opponent.y -= opponent_speed
+        assets.opponent.y -= assets.opponent_speed
 
     if assets.opponent.top <= 0:
         assets.opponent.top = 0
-    if assets.opponent.bottom >= screen_height:
-        assets.opponent.bottom = screen_height
+    if assets.opponent.bottom >= assets.screen_height:
+        assets.opponent.bottom = assets.screen_height
 
 
