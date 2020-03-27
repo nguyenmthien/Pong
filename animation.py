@@ -17,8 +17,13 @@ def ball():
     if assets.ball.left <= 0 or assets.ball.right >= assets.screen_width:
         ball_start()
 
-    if assets.ball.colliderect(assets.player) or assets.ball.colliderect(assets.opponent):
+    if assets.ball.colliderect(assets.player):
         assets.ball_speed_x *= -1
+        score("opponent")
+
+    if assets.ball.colliderect(assets.opponent):
+        assets.ball_speed_x *= -1
+        score("player")
 
 def player():
     """Animation of player"""
@@ -30,7 +35,10 @@ def player():
         player.bottom = assets.screen_height
 
 def score(person):
-    pass
+    if person == "opponent":
+        assets.opponent_score += 1
+    if person == "player":
+        assets.player_score += 1
 
 def ball_start():
     """Replace the ball to the origin"""
@@ -40,9 +48,9 @@ def ball_start():
 
 def opponent_ai():
     if assets.opponent.top < assets.ball.y:
-        assets.opponent.y += assets.opponent_speed
+        assets.opponent.y += assets.opponent_ai_speed
     if assets.opponent.bottom > assets.ball.y:
-        assets.opponent.y -= assets.opponent_speed
+        assets.opponent.y -= assets.opponent_ai_speed
 
     if assets.opponent.top <= 0:
         assets.opponent.top = 0
