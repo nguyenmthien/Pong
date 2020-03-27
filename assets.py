@@ -29,6 +29,9 @@ opponent_score = display_font.render(str(opponent_score_value), 1, Color.light_g
 ball = pygame.Rect(int(screen_width / 2 - 15), int(screen_height / 2 - 15), 30, 30) # set initial position of ball
 ball_speed_x = 7
 ball_speed_y = 7
+ball_speed_y_initial = 7
+ball_speed_y_modifier = 1/4
+
 
 
 def setup():

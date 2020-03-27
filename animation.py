@@ -8,18 +8,19 @@ import pygame
 
 def ball():
     """Animation and logic of ball"""
-    ball_increase_speed()
+    ball_change_position()
     ball_wall_check_collision()
     ball_paddle_check_collision()
+
 
 def ball_start():
     """Replace the ball to the origin"""
     assets.ball.center = (assets.screen_width/2, assets.screen_height/2)
-    assets.ball_speed_y *= random.choice((1,-1))
+    assets.ball_speed_y = assets.ball_speed_y_initial*random.choice((1,-1))
     assets.ball_speed_x *= random.choice((1,-1))
 
 
-def ball_increase_speed():
+def ball_change_position():
     assets.ball.x += assets.ball_speed_x
     assets.ball.y += assets.ball_speed_y
 
@@ -37,8 +38,14 @@ def ball_wall_check_collision():
         assets.ball_speed_y *= -1
 
 def ball_paddle_check_collision():
-    if assets.ball.colliderect(assets.opponent) or assets.ball.colliderect(assets.player):
+    if assets.ball.colliderect(assets.opponent):
         assets.ball_speed_x *= -1
+        assets.ball_speed_y = int((assets.ball.centery - assets.opponent.centery)/4)
+    
+    if assets.ball.colliderect(assets.player):
+        assets.ball_speed_x *= -1
+        assets.ball_speed_y = int((assets.ball.centery - assets.player.centery)*assets.ball_speed_y_modifier)
+        
 
 
 def player():
