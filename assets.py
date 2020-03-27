@@ -8,6 +8,7 @@ screen_height = 600
 FPS = 60
 
 player_speed = 0 #TODO: change redundant variable name into class methods
+player_control_speed = 6
 opponent_speed = 7
 ball_speed_x = 7
 ball_speed_y = 7

@@ -11,11 +11,11 @@ def update_input():
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                assets.player_speed -= 6
+                assets.player_speed -= assets.player_control_speed
             if event.key == pygame.K_DOWN:
-                assets.player_speed += 6
+                assets.player_speed += assets.player_control_speed
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
-                assets.player_speed += 6
+                assets.player_speed += assets.player_control_speed
             if event.key == pygame.K_DOWN:
-                assets.player_speed -= 6
+                assets.player_speed -= assets.player_control_speed
