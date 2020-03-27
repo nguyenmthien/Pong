@@ -1,6 +1,7 @@
 """Input for game
 """
 import pygame
+import sys
 import assets
 
 def update_input():

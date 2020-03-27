@@ -1,7 +1,6 @@
 """Assets for game
 """
 import pygame
-import sys
 
 screen_width = 800
 screen_height = 600
