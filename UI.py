@@ -4,6 +4,13 @@ from assets import color
 
 assets.setup()
 
+global title,font,font2,selected,num
+num = 0
+selected="SINGLE PLAYER"
+font2 = pygame.font.SysFont(None,20)
+title = pygame.image.load("title.jpg")
+font = pygame.font.Font("Pokemon.ttf", 20)
+
 # text render
 def text_render(text_name, font, color, surface, x, y):
     textobj = font.render(text_name,1,color) #render the object
@@ -14,7 +21,7 @@ def text_render(text_name, font, color, surface, x, y):
 def main_menu():
     global num, selected
     assets.screen.fill(assets.color.black) # black screen
-    assets.screen.blit(assets.title ,(178,0))
+    assets.screen.blit(title ,(178,0))
         
     # input logic
     for event in pygame.event.get():
@@ -23,9 +30,9 @@ def main_menu():
             quit()
         if event.type == pygame.KEYDOWN:
             if event.key==pygame.K_UP:
-                assets.num += 1
+                num += 1
             elif event.key==pygame.K_DOWN:
-                assets.num -= 1
+                num -= 1
             if event.key==pygame.K_RETURN:
                 if selected == "SINGLE PLAYER":
                     print("start")
@@ -34,30 +41,29 @@ def main_menu():
                     quit()
                     
     # text selection            
-    if assets.num == 0:
+    if num == 0:
         selected = "SINGLE PLAYER"
-    elif assets.num == -1:
+    elif num == -1:
         selected = "MULTI LOCAL PLAYER"
-    elif assets.num == -2:
+    elif num == -2:
         selected = "QUIT"
             
     # text output
     if selected == "SINGLE PLAYER":
-        choice_1 = text_render("SINGLE PLAYER", assets.font, assets.color.yellow, assets.screen, 400, 350)
+        choice_1 = text_render("SINGLE PLAYER", font, assets.color.yellow, assets.screen, 400, 350)
     else:
-        choice_1 = text_render("SINGLE PLAYER", assets.font, assets.color.white, assets.screen, 400, 350)
+        choice_1 = text_render("SINGLE PLAYER", font, assets.color.white, assets.screen, 400, 350)
     if selected == "MULTI LOCAL PLAYER":
-        choice_2 = text_render("MULTI LOCAL PLAYER", assets.font, assets.color.yellow, assets.screen, 400, 420)
+        choice_2 = text_render("MULTI LOCAL PLAYER", font, assets.color.yellow, assets.screen, 400, 420)
     else:
-        choice_2 = text_render("MULTI LOCAL PLAYER", assets.font, assets.color.white, assets.screen, 400, 420)
+        choice_2 = text_render("MULTI LOCAL PLAYER", font, assets.color.white, assets.screen, 400, 420)
     if selected == "QUIT":
-        choice_3 = text_render("QUIT", assets.font, assets.color.yellow, assets.screen, 400, 490)
+        choice_3 = text_render("QUIT", font, assets.color.yellow, assets.screen, 400, 490)
     else:
-        choice_3 = text_render("QUIT", assets.font, assets.color.white, assets.screen, 400, 490)
-    text_render("by Pham Kim Lan, Nguyen Minh Thien, EEIT2017" , assets.font2, color.white, assets.screen, 158, 593)
-        
-    pygame.display.update()
-    assets.clock.tick(assets.FPS)
+        choice_3 = text_render("QUIT", font, assets.color.white, assets.screen, 400, 490)
+    text_render("by Pham Kim Lan, Nguyen Minh Thien, EEIT2017" , font2, color.white, assets.screen, 158, 593)
+    
+    assets.update_FPS() # update screen
     
 if __name__ == '__main__':
     while True:

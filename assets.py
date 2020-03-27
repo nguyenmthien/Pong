@@ -26,16 +26,12 @@ class color:
 
 def setup():
 	"""Setup the screen and clock"""
-	global screen, clock, title,font,font2,selected,num
+	global screen, clock
 	pygame.init() 
 	clock = pygame.time.Clock()
 	screen = pygame.display.set_mode((screen_width,screen_height)) # screen display 
 	pygame.display.set_caption('Pong')  #caption
-	num = 0
-	selected="SINGLE PLAYER"
-	font2 = pygame.font.SysFont(None,20)
-	title = pygame.image.load("title.jpg")
-	font = pygame.font.Font("Pokemon.ttf", 20)
+
 	
 def draw_playing_field():
     """Draw the field of the game"""
@@ -45,6 +41,9 @@ def draw_playing_field():
     pygame.draw.rect(screen, color.light_grey, ball)  # draw ball 
     pygame.draw.aaline(screen, color.light_grey, (screen_width / 2, 0),(screen_width / 2, screen_height)) # draw middle line
     pygame.display.flip() #for updating content of the entire display
+
+def update_FPS():
+    pygame.display.flip()
     clock.tick(FPS)
 
 if __name__ == '__main__':
