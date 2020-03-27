@@ -29,6 +29,9 @@ def player():
     if assets.player.bottom >= assets.screen_height:
         player.bottom = assets.screen_height
 
+def score(person):
+    pass
+
 def ball_start():
     """Replace the ball to the origin"""
     assets.ball.center = (assets.screen_width/2, assets.screen_height/2)
