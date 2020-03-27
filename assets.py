@@ -18,19 +18,25 @@ player = pygame.Rect(int(screen_width - 20), int(screen_height / 2 - 70), 10,140
 opponent = pygame.Rect(10, int(screen_height / 2 - 70), 10,140) # set initial position of player2
 
 class color:
-    light_grey = (200,200,200)  # color for assets
-    bg_color = (0, 0, 0)        # black background
-
+	light_grey = (200,200,200)  # color for assets
+	bg_color = (0, 0, 0)        # black background
+	white=(255, 255, 255)
+	yellow=(255, 255, 0)
+	black=(0, 0, 0)
 
 def setup():
-    """Setup the screen and clock"""
-    global screen, clock
-    pygame.init() 
-    clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((screen_width,screen_height)) # screen display 
-    pygame.display.set_caption('Pong')  #caption
-
-
+	"""Setup the screen and clock"""
+	global screen, clock, title,font,font2,selected,num
+	pygame.init() 
+	clock = pygame.time.Clock()
+	screen = pygame.display.set_mode((screen_width,screen_height)) # screen display 
+	pygame.display.set_caption('Pong')  #caption
+	num = 0
+	selected="SINGLE PLAYER"
+	font2 = pygame.font.SysFont(None,20)
+	title = pygame.image.load("title.jpg")
+	font = pygame.font.Font("Pokemon.ttf", 20)
+	
 def draw_playing_field():
     """Draw the field of the game"""
     screen.fill(color.bg_color) # fill background color
@@ -40,7 +46,6 @@ def draw_playing_field():
     pygame.draw.aaline(screen, color.light_grey, (screen_width / 2, 0),(screen_width / 2, screen_height)) # draw middle line
     pygame.display.flip() #for updating content of the entire display
     clock.tick(FPS)
-
 
 if __name__ == '__main__':
     setup()
