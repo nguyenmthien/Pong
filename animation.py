@@ -8,15 +8,23 @@ import pygame
 
 def ball():
     """Animation and logic of ball"""
+    ball_increase_speed()
+    ball_wall_check_collision()
+    ball_paddle_check_collision()
 
+def ball_start():
+    """Replace the ball to the origin"""
+    assets.ball.center = (assets.screen_width/2, assets.screen_height/2)
+    assets.ball_speed_y *= random.choice((1,-1))
+    assets.ball_speed_x *= random.choice((1,-1))
+
+
+def ball_increase_speed():
     assets.ball.x += assets.ball_speed_x
     assets.ball.y += assets.ball_speed_y
 
-    if assets.ball.top <= 0 or assets.ball.bottom >= assets.screen_height:
-        assets.ball_speed_y *= -1
-    if assets.ball.colliderect(assets.opponent) or assets.ball.colliderect(assets.player):
-        assets.ball_speed_x *= -1
 
+def ball_wall_check_collision():
     if  assets.ball.right >= assets.screen_width:
         ball_start()
         score("opponent")
@@ -25,12 +33,12 @@ def ball():
         ball_start()
         score("player")
 
+    if assets.ball.top <= 0 or assets.ball.bottom >= assets.screen_height:
+        assets.ball_speed_y *= -1
 
-def ball_start():
-    """Replace the ball to the origin"""
-    assets.ball.center = (assets.screen_width/2, assets.screen_height/2)
-    assets.ball_speed_y *= random.choice((1,-1))
-    assets.ball_speed_x *= random.choice((1,-1))
+def ball_paddle_check_collision():
+    if assets.ball.colliderect(assets.opponent) or assets.ball.colliderect(assets.player):
+        assets.ball_speed_x *= -1
 
 
 def player():
