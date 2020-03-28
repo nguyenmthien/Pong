@@ -58,7 +58,7 @@ def draw_playing_field():
     pygame.draw.aaline(screen, Color.light_grey, (screen_width / 2, 0),(screen_width / 2, screen_height)) # draw middle line
     screen.blit(player_score, (int(3/4*screen_width - 20), 20))
     screen.blit(opponent_score, (int(screen_width/4 - 20), 20))
-    pygame.display.flip() #for updating content of the entire display
+    update_FPS()
 
 def update_FPS():
     pygame.display.flip()
