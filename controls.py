@@ -32,15 +32,13 @@ def title_screen():
             if event.key==pygame.K_UP:
                 if ui.choice > 0:
                     ui.choice -= 1
-                print(ui.choice)
             elif event.key==pygame.K_DOWN:
                 if ui.choice < 3:
                     ui.choice += 1
-                print(ui.choice)
             if event.key==pygame.K_RETURN:
-                if menu_variables.selected == "SINGLE PLAYER":
+                if ui.selection_list[ui.choice]== "SINGLE PLAYER":
                     print("start")
-                if menu_variables.selected == "QUIT":
+                if ui.selection_list[ui.choice] == "QUIT":
                     pygame.quit()
                     quit()  
 
