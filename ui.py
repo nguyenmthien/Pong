@@ -2,8 +2,6 @@ import pygame
 import assets
 from assets import color
 
-assets.setup()
-
 # text render
 def text_render(text_name, font, color, surface, x, y):
     textobj = font.render(text_name,1,color) #render the object
@@ -53,5 +51,6 @@ def main_menu():
     assets.update_FPS() # update screen
     
 if __name__ == '__main__':
+    assets.setup()
     while True:
         main_menu()
