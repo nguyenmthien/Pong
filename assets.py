@@ -1,44 +1,28 @@
 """Assets for game
 """
 import pygame
-import os
-
-class Color:
-    light_grey = (200,200,200)  # color for assets
-    bg_color = (0, 0, 0)        # black background
-
-pygame.font.init()
-display_font = pygame.font.Font('font.ttf', 80)
 
 screen_width = 800
 screen_height = 600
 FPS = 60
 
-player = pygame.Rect(int(screen_width - 20), int(screen_height / 2 - 70), 10,140) # set initial position of player1, rhs
 player_speed = 0 #TODO: change redundant variable name into class methods
 player_control_speed = 6
-player_score_value = 0
-player_score = display_font.render(str(player_score_value), 1, Color.light_grey)
-
-opponent = pygame.Rect(10, int(screen_height / 2 - 70), 10,140) # set initial position of player2
-opponent_ai_speed = 7
-opponent_control_speed = 6
-opponent_score_value = 0
-opponent_score = display_font.render(str(opponent_score_value), 1, Color.light_grey)
-
-ball = pygame.Rect(int(screen_width / 2 - 15), int(screen_height / 2 - 15), 30, 30) # set initial position of ball
+opponent_speed = 7
 ball_speed_x = 7
 ball_speed_y = 7
-ball_speed_y_initial = 7
-ball_speed_y_modifier = 1/4
 
-class color:
+# Game Rectangles
+ball = pygame.Rect(int(screen_width / 2 - 15), int(screen_height / 2 - 15), 30, 30) # set initial position of ball
+player = pygame.Rect(int(screen_width - 20), int(screen_height / 2 - 70), 10,140) # set initial position of player1, rhs
+opponent = pygame.Rect(10, int(screen_height / 2 - 70), 10,140) # set initial position of player2
+
+class Color:
 	light_grey = (200,200,200)  # color for assets
 	bg_color = (0, 0, 0)        # black background
 	white=(255, 255, 255)
 	yellow=(255, 255, 0)
 	black=(0, 0, 0)
-
 
 def setup():
 	"""Setup the screen and clock"""
@@ -56,9 +40,7 @@ def draw_playing_field():
     pygame.draw.rect(screen, Color.light_grey, opponent) # draw player 2
     pygame.draw.rect(screen, Color.light_grey, ball)  # draw ball 
     pygame.draw.aaline(screen, Color.light_grey, (screen_width / 2, 0),(screen_width / 2, screen_height)) # draw middle line
-    screen.blit(player_score, (int(3/4*screen_width - 20), 20))
-    screen.blit(opponent_score, (int(screen_width/4 - 20), 20))
-    update_FPS()
+    pygame.display.flip() #for updating content of the entire display
 
 def update_FPS():
     pygame.display.flip()
