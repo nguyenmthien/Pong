@@ -11,11 +11,10 @@ def text_render(text_name, font, color, surface, xy):
     surface.blit(textobj, textrect)  # draw textobj to the screen 
 
 def initialize_menu():
-    global font, font2
+    global font, font2, menu
     pygame.font.init()
     font2 = pygame.font.SysFont(None,20)
     font = pygame.font.Font("Pokemon.ttf", 20)
-
 
 def initialize_title_screen():
     global title, choice, selection_list, selection_xy
@@ -24,7 +23,6 @@ def initialize_title_screen():
     selection_xy = [(400, 350), (400, 420), (400, 490), (400, 550)]
     title = pygame.image.load("title.jpg")
 
-        
 def main_menu():    
     assets.screen.fill(assets.color.black) # black screen
     assets.screen.blit(title ,(178,0))

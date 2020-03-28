@@ -5,6 +5,8 @@ import sys
 import assets
 import ui
 
+
+menu = True
 def game_input():
     """Update pygame events"""
     for event in pygame.event.get():
@@ -24,6 +26,8 @@ def game_input():
 
 
 def title_screen():
+    global menu
+    #menu = True
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             pygame.quit()
@@ -38,8 +42,8 @@ def title_screen():
             if event.key==pygame.K_RETURN:
                 if ui.selection_list[ui.choice]== "SINGLE PLAYER":
                     print("start")
+                    menu = False
                 if ui.selection_list[ui.choice] == "QUIT":
                     pygame.quit()
                     quit()  
-
-                    
+        break
