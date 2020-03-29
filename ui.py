@@ -1,6 +1,5 @@
 import pygame
 import assets
-from assets import color
 
 
 # text render
@@ -24,16 +23,16 @@ def initialize_title_screen():
     title = pygame.image.load("title.jpg")
 
 def main_menu():    
-    assets.screen.fill(assets.color.black) # black screen
+    assets.screen.fill(assets.Color.black) # black screen
     assets.screen.blit(title ,(178,0))
 
     for i in range(len(selection_list)):
         if selection_list[i] == selection_list[choice]:
-            text_render(selection_list[i], font, assets.color.yellow, assets.screen, selection_xy[i])
+            text_render(selection_list[i], font, assets.Color.yellow, assets.screen, selection_xy[i])
         else:
-            text_render(selection_list[i], font, assets.color.white, assets.screen, selection_xy[i])
+            text_render(selection_list[i], font, assets.Color.white, assets.screen, selection_xy[i])
 
-    text_render("by Pham Kim Lan, Nguyen Minh Thien, EEIT2017" , font2, color.white, assets.screen, (158, 593))
+    text_render("by Pham Kim Lan, Nguyen Minh Thien, EEIT2017" , font2, assets.Color.white, assets.screen, (158, 593))
     
     assets.update_FPS() # update screen
     

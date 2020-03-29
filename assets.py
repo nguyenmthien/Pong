@@ -5,8 +5,9 @@ import os
 
 class Color:
     light_grey = (200,200,200)  # color for assets
-    bg_color = (0, 0, 0)        # black background
-
+    white=(255, 255, 255)
+    yellow=(255, 255, 0)
+    black=(0, 0, 0)
 pygame.font.init()
 display_font = pygame.font.Font('font.ttf', 80)
 
@@ -32,26 +33,20 @@ ball_speed_y = 7
 ball_speed_y_initial = 7
 ball_speed_y_modifier = 1/4
 
-class color:
-	light_grey = (200,200,200)  # color for assets
-	bg_color = (0, 0, 0)        # black background
-	white=(255, 255, 255)
-	yellow=(255, 255, 0)
-	black=(0, 0, 0)
 
 
 def setup():
-	"""Setup the screen and clock"""
-	global screen, clock
-	pygame.init() 
-	clock = pygame.time.Clock()
-	screen = pygame.display.set_mode((screen_width,screen_height)) # screen display 
-	pygame.display.set_caption('Pong')  #caption
+    """Setup the screen and clock"""
+    global screen, clock
+    pygame.init() 
+    clock = pygame.time.Clock()
+    screen = pygame.display.set_mode((screen_width,screen_height)) # screen display 
+    pygame.display.set_caption('Pong')  #caption
 
-	
+    
 def draw_playing_field():
     """Draw the field of the game"""
-    screen.fill(Color.bg_color) # fill background color
+    screen.fill(Color.black) # fill background color
     pygame.draw.rect(screen, Color.light_grey, player) # draw player 1 
     pygame.draw.rect(screen, Color.light_grey, opponent) # draw player 2
     pygame.draw.rect(screen, Color.light_grey, ball)  # draw ball 
