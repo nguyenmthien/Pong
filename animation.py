@@ -70,6 +70,14 @@ def opponent_ai():
     if assets.opponent.bottom >= assets.screen_height:
         assets.opponent.bottom = assets.screen_height
 
+def opponent():
+    """Local multiplayer opponent animation"""
+    assets.opponent.y += assets.opponent_speed
+
+    if assets.opponent.top <= 0:
+        assets.opponent.top = 0
+    if assets.opponent.bottom >= assets.screen_height:
+        assets.opponent.bottom = assets.screen_height
 
 def score(person):
     if person == "opponent":

@@ -23,6 +23,7 @@ player_score = display_font.render(str(player_score_value), 1, Color.light_grey)
 
 opponent = pygame.Rect(10, int(screen_height / 2 - 70), 10,140) # set initial position of player2
 opponent_ai_speed = 7
+opponent_speed = 0
 opponent_control_speed = 6
 opponent_score_value = 0
 opponent_score = display_font.render(str(opponent_score_value), 1, Color.light_grey)
