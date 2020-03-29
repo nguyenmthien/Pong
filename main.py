@@ -20,4 +20,10 @@ if __name__ == "__main__":
             animation.player()
             animation.opponent_ai()
             assets.draw_playing_field()
+        while controls.menu == "local multiplayer":
+            controls.local_multiplayer()
+            animation.ball()
+            animation.player()
+            animation.opponent()
+            assets.draw_playing_field()
         

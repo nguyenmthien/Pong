@@ -8,7 +8,7 @@ import ui
 
 menu = "title screen"
 def game_input():
-    """Update pygame events"""
+    """Singleplayer input handler"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -46,3 +46,29 @@ def title_screen():
                     pygame.quit()
                     quit()  
         break
+
+
+def local_multiplayer():
+    """Local multiplayer inputs handler"""
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                assets.player_speed -= assets.player_control_speed
+            if event.key == pygame.K_DOWN:
+                assets.player_speed += assets.player_control_speed
+            if event.key == pygame.K_w:
+                assets.opponent_speed -= assets.opponent_control_speed
+            if event.key == pygame.K_s:
+                assets.opponent_speed += assets.opponent_control_speed
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP:
+                assets.player_speed += assets.player_control_speed
+            if event.key == pygame.K_DOWN:
+                assets.player_speed -= assets.player_control_speed
+            if event.key == pygame.K_w:
+                assets.opponent_speed += assets.opponent_control_speed
+            if event.key == pygame.K_s:
+                assets.opponent_speed -= assets.opponent_control_speed
