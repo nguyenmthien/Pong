@@ -14,9 +14,10 @@ if __name__ == "__main__":
         while controls.menu == "title screen":
             controls.title_screen()
             ui.main_menu()
-        controls.game_input()
-        animation.ball()
-        animation.player()
-        animation.opponent_ai()
-        assets.draw_playing_field()
+        while controls.menu == "single player":
+            controls.game_input()
+            animation.ball()
+            animation.player()
+            animation.opponent_ai()
+            assets.draw_playing_field()
         
