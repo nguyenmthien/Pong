@@ -2,27 +2,30 @@ import pygame
 import assets
 
 
-# text render
 def text_render(text_name, font, color, surface, xy):
+    """Render text_name to surface"""
     textobj = font.render(text_name,1,color) #render the object
     textrect = textobj.get_rect()
     textrect.center = xy   # centric text
     surface.blit(textobj, textrect)  # draw textobj to the screen 
 
 def initialize_menu():
+    """Initialize global menu functions"""
     global font, font2, menu
     pygame.font.init()
     font2 = pygame.font.SysFont(None,20)
     font = pygame.font.Font("Pokemon.ttf", 20)
 
 def initialize_title_screen():
+    """Initialize title screen variables"""
     global title, choice, selection_list, selection_xy
     choice = 0
     selection_list = ["SINGLE PLAYER", "LOCAL MULTIPLAYER", "LOCAL NETWORK MULTIPLAYER", "QUIT"]
     selection_xy = [(400, 350), (400, 420), (400, 490), (400, 550)]
     title = pygame.image.load("title.jpg")
 
-def main_menu():    
+def main_menu():  
+    """Draw the title screen"""  
     assets.screen.fill(assets.Color.black) # black screen
     assets.screen.blit(title ,(178,0))
 

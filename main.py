@@ -6,6 +6,7 @@ import animation
 import controls
 import ui
 
+
 if __name__ == "__main__":
     ui.initialize_menu()
     ui.initialize_title_screen()

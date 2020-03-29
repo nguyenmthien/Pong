@@ -4,10 +4,13 @@ import pygame
 import os
 
 class Color:
+    """Contains color in RGB fomat"""
     light_grey = (200,200,200)  # color for assets
     white=(255, 255, 255)
     yellow=(255, 255, 0)
     black=(0, 0, 0)
+
+
 pygame.font.init()
 display_font = pygame.font.Font('font.ttf', 80)
 
@@ -56,6 +59,7 @@ def draw_playing_field():
     update_FPS()
 
 def update_FPS():
+    """Make sure game run at assests.FPS"""
     pygame.display.flip()
     clock.tick(FPS)
 
