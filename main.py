@@ -11,7 +11,7 @@ if __name__ == "__main__":
     ui.initialize_title_screen()
     assets.setup()
     while True:
-        while controls.menu:
+        while controls.menu == "title screen":
             controls.title_screen()
             ui.main_menu()
         controls.game_input()
