@@ -47,7 +47,6 @@ def ball_paddle_check_collision():
         assets.ball_speed_y = int((assets.ball.centery - assets.player.centery)*assets.ball_speed_y_modifier)
         
 
-
 def player():
     """Animation of player"""
     assets.player.y += assets.player_speed
@@ -86,3 +85,11 @@ def score(person):
     if person == "player":
         assets.player_score_value += 1
         assets.player_score = assets.display_font.render(str(assets.player_score_value), 1, assets.Color.light_grey)
+
+
+def reset():
+    ball_start()
+    assets.player_score_value = 0
+    assets.opponent_score_value = 0
+    assets.player.centery = int(assets.screen_height/2)
+    assets.opponent.centery = int(assets.screen_height/2)

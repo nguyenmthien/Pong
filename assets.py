@@ -35,7 +35,6 @@ ball_speed_y_initial = 7
 ball_speed_y_modifier = 1/4
 
 
-
 def setup():
     """Setup the screen and clock"""
     global screen, clock
