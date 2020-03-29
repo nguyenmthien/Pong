@@ -9,6 +9,7 @@ import ui
 menu = "title screen"
 def game_input():
     """Update pygame events"""
+    global menu
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -18,6 +19,9 @@ def game_input():
                 assets.player_speed -= assets.player_control_speed
             if event.key == pygame.K_DOWN:
                 assets.player_speed += assets.player_control_speed
+            if event.key == pygame.K_ESCAPE:
+                menu = "title screen"
+
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
                 assets.player_speed += assets.player_control_speed
