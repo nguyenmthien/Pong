@@ -26,26 +26,26 @@ def initialize_title_screen():
 def main_menu():
     """Draw the title screen"""
     title = pygame.image.load("title.jpg")
-    assets.screen.fill(assets.Color.black) # black screen
+    assets.screen.fill(assets.COLOR['black']) # black screen
     assets.screen.blit(title, (178, 0))
 
-    for i in range(len(selection_list)):
-        if selection_list[i] == selection_list[choice]:
-            text_render(selection_list[i],
+    for i, text in enumerate(selection_list):
+        if text == selection_list[choice]:
+            text_render(text,
                         font,
-                        assets.Color.yellow,
+                        assets.COLOR['yellow'],
                         assets.screen,
                         selection_xy[i])
         else:
-            text_render(selection_list[i],
+            text_render(text,
                         font,
-                        assets.Color.white,
+                        assets.COLOR['white'],
                         assets.screen,
                         selection_xy[i])
 
     text_render("by Pham K. Lan, Nguyen M. Thien, EEIT2017",
                 font2,
-                assets.Color.white,
+                assets.COLOR['white'],
                 assets.screen,
                 (158, 593))
 

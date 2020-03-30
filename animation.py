@@ -48,7 +48,7 @@ def ball_paddle_check_collision():
     if assets.ball.colliderect(assets.player):
         assets.ball_speed_x *= -1
         assets.ball_speed_y = int((assets.ball.centery - assets.player.centery)
-                                  *assets.ball_speed_y_modifier)
+                                  * assets.ball_speed_y_modifier)
 
 
 def player():
@@ -90,12 +90,12 @@ def score(person):
         assets.opponent_score_value += 1
         assets.opponent_score = assets.display_font.render(str(assets.opponent_score_value),
                                                            1,
-                                                           assets.Color.light_grey)
+                                                           assets.COLOR['light_grey'])
     if person == "player":
         assets.player_score_value += 1
         assets.player_score = assets.display_font.render(str(assets.player_score_value),
                                                          1,
-                                                         assets.Color.light_grey)
+                                                         assets.COLOR['light_grey'])
 
 
 def reset():

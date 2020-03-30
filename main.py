@@ -27,6 +27,13 @@ if __name__ == "__main__":
             animation.opponent()
             assets.draw_playing_field()
         while CONTROL.current_menu == "local network server":
-            pass
+            CONTROL.game_input()
+            animation.ball()
+            animation.player()
+            animation.opponent_ai()
+            assets.draw_playing_field()
+            #missing functions
         while CONTROL.current_menu == "local network client":
-            pass
+            CONTROL.client()
+            assets.draw_client()
+            #missing function

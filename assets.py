@@ -3,13 +3,12 @@
 import pygame
 
 
-class Color:
-    """Contains color in RGB fomat"""
-    #TODO: change class to dictionary
-    light_grey = (200, 200, 200)  # color for assets
-    white = (255, 255, 255)
-    yellow = (255, 255, 0)
-    black = (0, 0, 0)
+COLOR = {
+    'light_grey': (200, 200, 200),
+    'white'     : (255, 255, 255),
+    'yellow'    : (255, 255, 0),
+    'black'     : (0, 0, 0),
+}
 
 
 #TODO: put all of these into classes
@@ -27,14 +26,15 @@ player = pygame.Rect(int(screen_width - 20),
 player_speed = 0
 player_control_speed = 6
 player_score_value = 0
-player_score = display_font.render(str(player_score_value), 1, Color.light_grey)
+player_score = display_font.render(str(player_score_value), 1, COLOR["light_grey"])
 
 opponent = pygame.Rect(10, int(screen_height / 2 - 70), 10, 140) # set initial position of player2
 opponent_ai_speed = 7
 opponent_speed = 0
+opponent_previous_speed = 0
 opponent_control_speed = 6
 opponent_score_value = 0
-opponent_score = display_font.render(str(opponent_score_value), 1, Color.light_grey)
+opponent_score = display_font.render(str(opponent_score_value), 1, COLOR["light_grey"])
 
 ball = pygame.Rect(int(screen_width / 2 - 15),
                    int(screen_height / 2 - 15),
@@ -57,22 +57,38 @@ def setup():
 
 def draw_playing_field():
     """Draw the field of the game"""
-    screen.fill(Color.black) # fill background color
-    pygame.draw.rect(screen, Color.light_grey, player) # draw player 1
-    pygame.draw.rect(screen, Color.light_grey, opponent) # draw player 2
-    pygame.draw.rect(screen, Color.light_grey, ball)  # draw ball
+    screen.fill(COLOR["black"]) # fill background color
+    pygame.draw.rect(screen, COLOR["light_grey"], player) # draw player 1
+    pygame.draw.rect(screen, COLOR['light_grey'], opponent) # draw player 2
+    pygame.draw.rect(screen, COLOR['light_grey'], ball)  # draw ball
     pygame.draw.aaline(screen,
-                       Color.light_grey,
+                       COLOR['light_grey'],
                        (screen_width / 2, 0),
                        (screen_width / 2, screen_height)) # draw middle line
     screen.blit(player_score, (int(3/4*screen_width - 20), 20))
     screen.blit(opponent_score, (int(screen_width/4 - 20), 20))
     update_FPS()
 
+
+def draw_client():
+    """Draw the field in client mode"""
+    screen.fill(COLOR['black']) # fill background color
+    pygame.draw.rect(screen, COLOR['light_grey'], player) # draw player 1
+    pygame.draw.rect(screen, COLOR['light_grey'], opponent) # draw player 2
+    pygame.draw.rect(screen, COLOR['light_grey'], ball)  # draw ball
+    pygame.draw.aaline(screen,
+                       COLOR['light_grey'],
+                       (screen_width / 2, 0),
+                       (screen_width / 2, screen_height)) # draw middle line
+    screen.blit(player_score, (int(3/4*screen_width - 20), 20))
+    screen.blit(opponent_score, (int(screen_width/4 - 20), 20))
+
+
 def update_FPS():
     """Make sure game run at assests.FPS"""
     pygame.display.flip()
     clock.tick(FPS)
+
 
 if __name__ == '__main__':
     setup()
