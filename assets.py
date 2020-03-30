@@ -16,6 +16,7 @@ COLOR = {
     'black'     : (0, 0, 0),
 }
 
+
 class Assets:
     """Default assets class"""
     def __init__(self):
@@ -61,6 +62,7 @@ class Assets:
         pygame.display.flip()
         self.clock.tick(FPS)
 
+
 class Player:
     """Class for manipulating the player, i.e. right hand side paddle"""
     def __init__(self):
@@ -93,6 +95,7 @@ class Player:
         """Reset score and position"""
         self.score_value = 0
         self.rect.centery = int(SCREEN_HEIGHT/2)
+
 
 class Opponent:
     """Class for manipulating the opponent i.e. the left hand side paddle"""

@@ -36,4 +36,3 @@ if __name__ == "__main__":
             CONTROL.client(ASSETS)
             ASSETS.draw_client()
             #missing function
-            

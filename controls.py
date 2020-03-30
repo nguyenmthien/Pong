@@ -93,6 +93,7 @@ class Control:
                     asset_class.opponent.speed += asset_class.opponent.control_speed
                 if event.key == pygame.K_s:
                     asset_class.opponent.speed -= asset_class.opponent.control_speed
+
     def client(self, asset_class: assets.Assets):
         """Client mode input handler"""
         asset_class.opponent.previous_speed = asset_class.opponent.speed

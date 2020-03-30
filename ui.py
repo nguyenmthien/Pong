@@ -7,6 +7,7 @@ pygame.font.init()
 UI_FONT2 = pygame.font.SysFont(None, 20)
 UI_FONT = pygame.font.Font("Pokemon.ttf", 20)
 
+
 class UserInterface:
     """Default ui class"""
     def __init__(self):
