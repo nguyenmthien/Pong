@@ -133,8 +133,8 @@ class Opponent:
         """Increase and draw score of opponent"""
         self.score_value += 1
         self.score = DISPLAY_FONT.render(str(self.score_value),
-                                              1,
-                                              COLOR['light_grey'])
+                                         1,
+                                         COLOR['light_grey'])
 
     def reset(self):
         """Reset score and position"""
