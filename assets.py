@@ -25,8 +25,8 @@ class Assets:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # screen display
         pygame.display.set_caption('Pong')  #caption
-        self.player = Player()
-        self.opponent = Opponent()
+        self.player = Paddle('right')
+        self.opponent = Paddle('left')
         self.ball = Ball()
 
     def draw_playing_field(self):
@@ -63,14 +63,22 @@ class Assets:
         self.clock.tick(FPS)
 
 
-class Player:
-    """Class for manipulating the player, i.e. right hand side paddle"""
-    def __init__(self):
-        self.rect = pygame.Rect(int(SCREEN_WIDTH - 20),
-                                int(SCREEN_HEIGHT / 2 - 70),
-                                10,
-                                140)
+class Paddle:
+    """Class for manipulating the paddles"""
+    def __init__(self, location='right'):
+        if location is 'right':
+            self.rect = pygame.Rect(int(SCREEN_WIDTH - 20),
+                                    int(SCREEN_HEIGHT / 2 - 70),
+                                    10,
+                                    140)
+        if location is 'left':
+            self.rect = pygame.Rect(10,
+                                    int(SCREEN_HEIGHT / 2 - 70),
+                                    10,
+                                    140)
         self.speed = 0
+        self.previous_speed = 0
+        self.ai_speed = 7
         self.control_speed = 6
         self.score_value = 0
         self.score = DISPLAY_FONT.render(str(self.score_value), 1, COLOR["light_grey"])
@@ -96,21 +104,6 @@ class Player:
         self.score_value = 0
         self.rect.centery = int(SCREEN_HEIGHT/2)
 
-
-class Opponent:
-    """Class for manipulating the opponent i.e. the left hand side paddle"""
-    def __init__(self):
-        self.rect = pygame.Rect(10,
-                                int(SCREEN_HEIGHT / 2 - 70),
-                                10,
-                                140)
-        self.ai_speed = 7
-        self.speed = 0
-        self.previous_speed = 0
-        self.control_speed = 6
-        self.score_value = 0
-        self.score = DISPLAY_FONT.render(str(self.score_value), 1, COLOR["light_grey"])
-
     def artificial_intelligence(self, ball_y: int):
         """Single-player AI"""
         if self.rect.top < ball_y:
@@ -122,27 +115,6 @@ class Opponent:
             self.rect.top = 0
         if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
-
-    def animation(self):
-        """Animation of opponent"""
-        self.rect.y += self.speed
-
-        if self.rect.top <= 0:
-            self.rect.top = 0
-        if self.rect.bottom >= SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
-
-    def increase_score(self):
-        """Increase and draw score of opponent"""
-        self.score_value += 1
-        self.score = DISPLAY_FONT.render(str(self.score_value),
-                                         1,
-                                         COLOR['light_grey'])
-
-    def reset(self):
-        """Reset score and position"""
-        self.score_value = 0
-        self.rect.centery = int(SCREEN_HEIGHT/2)
 
 
 class Ball:
@@ -157,7 +129,7 @@ class Ball:
         self.speed_y_initial = 7
         self.speed_y_modifier = 1/4
 
-    def animation(self, opponent: Opponent, player: Player):
+    def animation(self, opponent: Paddle, player: Paddle):
         """Animation and logic of ball"""
         self.change_position()
         self.check_collision_wall(opponent, player)
@@ -174,7 +146,7 @@ class Ball:
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
 
-    def check_collision_wall(self, opponent: Opponent, player: Player):
+    def check_collision_wall(self, opponent: Paddle, player: Paddle):
         """Check colision and change movement of ball with wall"""
         if  self.rect.right >= SCREEN_WIDTH:
             self.start()
@@ -187,7 +159,7 @@ class Ball:
         if self.rect.top <= 0 or self.rect.bottom >= SCREEN_HEIGHT:
             self.speed_y *= -1
 
-    def check_collision_paddle(self, opponent: Opponent, player: Player):
+    def check_collision_paddle(self, opponent: Paddle, player: Paddle):
         """Check colision and change movement of ball with paddles"""
         if self.rect.colliderect(opponent.rect):
             self.speed_x *= -1
