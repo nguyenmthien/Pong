@@ -4,56 +4,61 @@ import pygame
 import assets
 
 pygame.font.init()
-font2 = pygame.font.SysFont(None, 20)
-font = pygame.font.Font("Pokemon.ttf", 20)
+UI_FONT2 = pygame.font.SysFont(None, 20)
+UI_FONT = pygame.font.Font("Pokemon.ttf", 20)
 
-def text_render(text_name, font_name, color, surface, coordinate):
-    """Render text_name to surface"""
-    textobj = font_name.render(text_name, 1, color) #render the object
-    textrect = textobj.get_rect()
-    textrect.center = coordinate   # centric text
-    surface.blit(textobj, textrect)  # draw textobj to the screen
+class UserInterface:
+    """Default ui class"""
+    def __init__(self):
+        self.choice = 0
+        self.selection_list = ["SINGLE PLAYER",
+                               "LOCAL MULTIPLAYER",
+                               "HOST GAME",
+                               "JOIN GAME",
+                               "QUIT"]
+        self.selection_xy = [(400, 350),
+                             (400, 400),
+                             (400, 450),
+                             (400, 500),
+                             (400, 550)]
 
+    def text_render(self, text_name, font_name, color, surface, coordinate):
+        """Render text_name to surface"""
+        textobj = font_name.render(text_name, 1, color) #render the object
+        textrect = textobj.get_rect()
+        textrect.center = coordinate   # centric text
+        surface.blit(textobj, textrect)  # draw textobj to the screen
 
-def initialize_title_screen():
-    """Initialize title screen variables"""
-    global choice, selection_list, selection_xy
-    choice = 0
-    selection_list = ["SINGLE PLAYER", "LOCAL MULTIPLAYER", "LOCAL NETWORK MULTIPLAYER", "QUIT"]
-    selection_xy = [(400, 350), (400, 420), (400, 490), (400, 550)]
+    def title_screen(self, asset_class: assets.Assets):
+        """Draw the title screen"""
+        title = pygame.image.load("title.jpg")
+        asset_class.screen.fill(assets.COLOR['black']) # black screen
+        asset_class.screen.blit(title, (178, 0))
 
+        for i, text in enumerate(self.selection_list):
+            if text == self.selection_list[self.choice]:
+                self.text_render(text,
+                                 UI_FONT,
+                                 assets.COLOR['yellow'],
+                                 asset_class.screen,
+                                 self.selection_xy[i])
+            else:
+                self.text_render(text,
+                                 UI_FONT,
+                                 assets.COLOR['white'],
+                                 asset_class.screen,
+                                 self.selection_xy[i])
 
-def main_menu():
-    """Draw the title screen"""
-    title = pygame.image.load("title.jpg")
-    assets.screen.fill(assets.COLOR['black']) # black screen
-    assets.screen.blit(title, (178, 0))
+        self.text_render("by Pham K. Lan, Nguyen M. Thien, EEIT2017",
+                         UI_FONT2,
+                         assets.COLOR['white'],
+                         asset_class.screen,
+                         (158, 593))
 
-    for i, text in enumerate(selection_list):
-        if text == selection_list[choice]:
-            text_render(text,
-                        font,
-                        assets.COLOR['yellow'],
-                        assets.screen,
-                        selection_xy[i])
-        else:
-            text_render(text,
-                        font,
-                        assets.COLOR['white'],
-                        assets.screen,
-                        selection_xy[i])
-
-    text_render("by Pham K. Lan, Nguyen M. Thien, EEIT2017",
-                font2,
-                assets.COLOR['white'],
-                assets.screen,
-                (158, 593))
-
-    assets.update_FPS() # update screen
+        asset_class.maintain_fps() # update screen
 
 
 if __name__ == '__main__':
-    initialize_title_screen()
-    assets.setup()
-    while True:
-        main_menu()
+    ASSET = assets.Assets()
+    USER_INTERFACE = UserInterface()
+    USER_INTERFACE.title_screen(ASSET)
