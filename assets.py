@@ -68,7 +68,7 @@ class Assets:
                 'player'    :self.player.rect.center,
                 'opponent'  :self.opponent.rect.center,}
 
-    def set_cooridnates(self, coords:dict):
+    def set_cooridnates(self, coords: dict):
         """Assign coordinates to the object"""
         self.ball.rect.center = coords['ball']
         self.player.rect.center = coords['player']
