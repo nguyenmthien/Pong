@@ -62,6 +62,17 @@ class Assets:
         pygame.display.flip()
         self.clock.tick(FPS)
 
+    def get_cooridnates(self):
+        """Return assets center coordinates"""
+        return {'ball'      :self.ball.rect.center,
+                'player'    :self.player.rect.center,
+                'opponent'  :self.opponent.rect.center,}
+
+    def set_cooridnates(self, coords:dict):
+        """Assign coordinates to the object"""
+        self.ball.rect.center = coords['ball']
+        self.player.rect.center = coords['player']
+        self.opponent.rect.center = coords['opponent']
 
 class Paddle:
     """Class for manipulating the paddles"""
