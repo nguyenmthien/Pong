@@ -8,7 +8,7 @@ SCREEN_HEIGHT = 600
 FPS = 60
 pygame.font.init()
 DISPLAY_FONT = pygame.font.Font('font.ttf', 80)
-UI_FONT2 = pygame.font.SysFont("font.ttf", 20)
+UI_FONT2 = pygame.font.Font("font.ttf", 15)
 UI_FONT = pygame.font.Font("Pokemon.ttf", 20)
 
 COLOR = {
@@ -87,12 +87,12 @@ class Assets:
 class Paddle:
     """Class for manipulating the paddles"""
     def __init__(self, location='right'):
-        if location is 'right':
+        if location == 'right':
             self.rect = pygame.Rect(int(SCREEN_WIDTH - 20),
                                     int(SCREEN_HEIGHT / 2 - 70),
                                     10,
                                     140)
-        if location is 'left':
+        if location == 'left':
             self.rect = pygame.Rect(10,
                                     int(SCREEN_HEIGHT / 2 - 70),
                                     10,
@@ -202,11 +202,11 @@ class UserInterface:
                                "HOST GAME",
                                "JOIN GAME",
                                "QUIT"]
-        self.selection_xy = [(400, 350),
-                             (400, 400),
-                             (400, 450),
-                             (400, 500),
-                             (400, 550)]
+        self.selection_xy = [(400, 325),
+                             (400, 375),
+                             (400, 425),
+                             (400, 475),
+                             (400, 525)]
 
     def text_render(self, text_name, font_name, color, surface, coordinate):
         """Render text_name to surface"""
@@ -235,11 +235,11 @@ class UserInterface:
                                  asset_class.screen,
                                  self.selection_xy[i])
 
-        self.text_render("by Pham K. Lan, Nguyen M. Thien, EEIT2017",
+        self.text_render("by Nguyen M. Thien, Pham K. Lan, Nguyen K. Thinh, EEIT2017",
                          UI_FONT2,
                          COLOR['white'],
                          asset_class.screen,
-                         (158, 593))
+                         (200, 593))
 
         asset_class.maintain_fps() # update screen
 

@@ -38,6 +38,7 @@ class Control:
         """Title screen input handler"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                print("exit game")
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
@@ -61,6 +62,7 @@ class Control:
                         print("start client")
                         self.current_menu = "local network client"
                     if ui_class.selection_list[ui_class.choice] == "QUIT":
+                        print("exit game")
                         pygame.quit()
                         sys.exit()
 
