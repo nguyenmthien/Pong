@@ -32,13 +32,13 @@ class Assets:
     def draw_playing_field(self):
         """Draw the field of the game"""
         self.screen.fill(COLOR["black"]) # fill background color
-        pygame.draw.rect(self.screen, COLOR["light_grey"], self.player.rect) # draw player 1
-        pygame.draw.rect(self.screen, COLOR['light_grey'], self.opponent.rect) # draw player 2
+        pygame.draw.rect(self.screen, COLOR["light_grey"], self.player.rect)  # draw player 1
+        pygame.draw.rect(self.screen, COLOR['light_grey'], self.opponent.rect)  # draw player 2
         pygame.draw.rect(self.screen, COLOR['light_grey'], self.ball.rect)  # draw ball
         pygame.draw.aaline(self.screen,
                            COLOR['light_grey'],
                            (SCREEN_WIDTH / 2, 0),
-                           (SCREEN_WIDTH / 2, SCREEN_HEIGHT)) # draw middle line
+                           (SCREEN_WIDTH / 2, SCREEN_HEIGHT))  # draw middle line
         self.screen.blit(self.player.score, (int(3/4*SCREEN_WIDTH - 20), 20))
         self.screen.blit(self.opponent.score, (int(SCREEN_WIDTH/4 - 20), 20))
         self.maintain_fps()
@@ -56,23 +56,31 @@ class Assets:
         self.screen.blit(self.player.score, (int(3/4*SCREEN_WIDTH - 20), 20))
         self.screen.blit(self.opponent.score, (int(SCREEN_WIDTH/4 - 20), 20))
 
-
     def maintain_fps(self):
         """Make sure game run at assests.FPS"""
         pygame.display.flip()
         self.clock.tick(FPS)
 
-    def get_cooridnates(self):
+    def get_coordinates(self):
         """Return assets center coordinates"""
         return {'ball'      :self.ball.rect.center,
                 'player'    :self.player.rect.center,
                 'opponent'  :self.opponent.rect.center,}
 
-    def set_cooridnates(self, coords: dict):
+    def set_coordinates(self, coords: dict):
         """Assign coordinates to the object"""
         self.ball.rect.center = coords['ball']
         self.player.rect.center = coords['player']
         self.opponent.rect.center = coords['opponent']
+
+    def get_opponent_speed(self):
+        """Return opponent speed"""
+        return self.opponent.speed
+
+    def set_opponent_speed(self, speed: int):
+        """set opponent speed"""
+        self.opponent.speed = speed
+
 
 class Paddle:
     """Class for manipulating the paddles"""

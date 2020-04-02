@@ -1,14 +1,16 @@
 """Main game file
 """
+import threading
 import assets
 import controls
 import ui
-
+import networking
 
 if __name__ == "__main__":
     UI = ui.UserInterface()
     ASSETS = assets.Assets()
     CONTROL = controls.Control()
+    NET = networking.Networking()
     while True:
         while CONTROL.current_menu == "title screen":
             CONTROL.title_screen(UI)
@@ -26,13 +28,26 @@ if __name__ == "__main__":
             ASSETS.opponent.animation()
             ASSETS.draw_playing_field()
         while CONTROL.current_menu == "local network server":
-            CONTROL.game_input(ASSETS)
-            ASSETS.ball.animation(ASSETS.opponent, ASSETS.player)
-            ASSETS.player.animation()
-            ASSETS.opponent.animation()
-            ASSETS.draw_playing_field()
-            #missing functions
+            if NET.is_binded is False:
+                NET.init_server()
+            if NET.is_binded is True and NET.is_game_running is False:
+                pass  # UI.waiting for connection
+            while NET.is_game_running is True:
+                NET.send_client()
+                CONTROL.game_input(ASSETS)
+                ASSETS.ball.animation(ASSETS.opponent, ASSETS.player)
+                ASSETS.player.animation()
+                ASSETS.opponent.animation()
+                ASSETS.draw_playing_field()
+                NET.send_coordinates()
+                NET.recieve_controls()
         while CONTROL.current_menu == "local network client":
-            CONTROL.client(ASSETS)
-            ASSETS.draw_client()
-            #missing function
+            if NET.is_binded is False:
+                NET.init_client()
+            if NET.is_binded is True and NET.is_game_running is False:
+                # UI.choose_server()
+                NET.connect_to_sever(NET.LOCAL_IP)
+            while NET.is_game_running is True:
+                CONTROL.client(ASSETS)
+                ASSETS.draw_client()
+                NET.receive_coordinates()

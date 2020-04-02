@@ -1,77 +1,73 @@
-import socket
-import assets
-import threading
 import json
-
-Host = socket.gethostbyname(socket.gethostname())
-reply = ""
-Port = 2033
-Port_client = 2056
-Is_game_running = False
-Check_bind = False
-
-ASSETS = assets.Assets
+import socket
+import threading
+import assets
 
 
-class Server:
+class Networking:
+    """Networking default class"""
+    def __init__(self):
+        self.LOCAL_IP = socket.gethostbyname(socket.gethostname())
+        self.reply = ""
+        self.PORT_SERVER = 2033
+        self.PORT_CLIENT = 2056
+        self.is_game_running = False
+        self.is_binded = False
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     def init_server(self):
-        """server initialize"""
-        global Check_bind
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # socket declaration
-        self.bind = self.s.bind((Host, Port))  # bind host and port
-        Check_bind = True
-        print("Bind status", Check_bind)
-        print("socket binded to port", Port)
-
-        self.s.listen(1)  # allow upto 1 client connection
+        """Initialize socket in server mode"""
+        self.socket.bind((self.LOCAL_IP, self.PORT_SERVER))
+        self.is_binded = True
+        print(f"Binded a TCP socket to {self.LOCAL_IP}:{self.PORT_SERVER}!")
+        self.socket.listen(1)
         print("waiting for connection")
 
-    def threaded_client(self, clientsocket):
-        """client threading function"""
-        # connect.send(str.encode("connected"))
-        self.data = clientsocket.recv(2048)  # allow receiving 2048 bits data
-        self.reply = self.data.decode("utf-8")  # utf-8 encoding
+    def init_client(self):
+        self.socket.bind((self.LOCAL_IP, self.PORT_CLIENT))
+        self.is_binded = True
+        print(f"Binded a TCP socket to {self.LOCAL_IP}:{self.PORT_SERVER}!")
+
+    def connect_to_sever(self, IP):
+        """Connect client to server, given IP address"""
+        self.socket.connect((IP, self.PORT_SERVER))
+        print(f"Conneted to server at {IP}")
+        self.is_game_running = True
+
+    def wait_for_client(self):
+        """Wait and confirm the client"""
+        self.client_socket, self.client_address = self.s.accept()
+        print(f"Conneted to client at {self.client_address}")
+        self.is_game_running = True
+
+    def send_coordinates(self, asset_class: assets.Asset):
+        """Send coordinates from asset_class to client"""
+        self.binary = self.dict_to_binary(asset_class.get_cooridnates())
+        self.client_socket.send(str.encode(self.binary))
+
+    def receive_coordinates(self, asset_class: assets.Assets):
+        """Use in client, recive data from server and decode it"""
+        binary = self.socket.recv(2048)  # allow receiving 2048 bits data
+        binary_decoded = self.data.decode("utf-8")  # utf-8 encoding
         if not self.data:  # if sending incompleted data
             print("disconnected")
         else:
-            self.translated_binary = Server.binary_to_dict(self, self.reply)
-            ASSETS.set_cooridnates(**(self.translated_binary))
-            print("received:", self.reply)
-            print("translated:", self.translated_binary)
-        """
-        clientsocket.sendall(str.encode(self.reply))
-        # send reply back to client
-        """
-    def send_client(self):
-        """client handle"""
-        self.clientsocket, self.address = self.s.accept()
-        print("client's address:", self.address)
-        # print out client's address
-        # self.send_coordinates = assets.Assets.set_cooridnates(self, Server.translated_binary)
-        self.clientsocket.send("from server: speaking".encode())
-        # self.clientsocket.send(self.send_coordinates.encode())
-        # send data to client
+            translated_binary = self.binary_to_dict(self, binary_decoded)
+            asset_class.set_coordinates(translated_binary)
+            print(f"Recieved: {translated_binary}")
 
-        threading.Thread(target=self.threaded_client,
-                         args=(self.clientsocket, )).start()
-        # start new thread after sending message to client
+    def send_controls(self, asset_class: assets.Assets):
+        """Use in client, send control to server"""
+        pass  # use getter
+
+    def recieve_controls(self, asset_class: assets.Assets):
+        """Use in server, recieve control from client"""
+        pass  # use setter
 
     def binary_to_dict(self, binary):
         """translate binary to dictionary"""
         jsn = ''.join(chr(int(x, 2)) for x in binary.split())
-        self.d = json.loads(jsn)
-        return self.d
-
-
-class Client:
-    def __init__(self):
-        """client initialize"""
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.host = socket.gethostbyname(socket.gethostname())
-        self.port = 2033
-        self.address = (self.host, self.port)
-        self.id = self.connect()
+        return json.loads(jsn)
 
     def dict_to_binary(self, dict):
         """Translate dictionary to binary"""
@@ -79,48 +75,6 @@ class Client:
         self.binary = ' '.join(format(ord(letter), 'b') for letter in str)
         return self.binary
 
-    def connect(self):
-        """Connect client to server"""
-        global Is_game_running
-        Is_game_running = True
-        self.client.connect(self.address)
-        print("is game running", Is_game_running)
-        return self.client.recv(2048).decode()
-
-    def send(self):
-        """Send data to server"""
-        try:
-            self.data = ASSETS.get_cooridnates()
-            self.binary = Client.dict_to_binary(self, self.data)
-            self.client.send(str.encode(self.binary))
-            # send objects' coordinates to server
-            """
-            reply = self.client.recv(2048).decode()
-            return reply
-            """
-        except socket.error as error:
-            return str(error)
-
-# client send receive
-# server send receive
-# create constructor for new class
-# in server receive
-# control from client to server sending function
-# bind server and bind client, not in loop, once
-# -> 1 logic variable to check whether they are binded or not
-
-
-def send_coordinates():
-    """Server send coordinates of players and ball"""
-
-
-def receive_coordinates():
-    """Server receive coordinates of players and ball"""
-    # receive objects coordinate
-
 
 if __name__ == "__main__":
-    SERVER = Server()
-    SERVER.init_server()
-    while True:
-        SERVER.send_client()
+    pass

@@ -58,6 +58,9 @@ class Control:
                     if ui_class.selection_list[ui_class.choice] == "HOST GAME":
                         print("start host game")
                         self.current_menu = "local network server"
+                    if ui_class.selection_list[ui_class.choice] == "JOIN GAME":
+                        print("start client")
+                        self.current_menu = "local network client"
                     if ui_class.selection_list[ui_class.choice] == "QUIT":
                         pygame.quit()
                         sys.exit()
