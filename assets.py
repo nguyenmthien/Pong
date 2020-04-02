@@ -8,6 +8,8 @@ SCREEN_HEIGHT = 600
 FPS = 60
 pygame.font.init()
 DISPLAY_FONT = pygame.font.Font('font.ttf', 80)
+UI_FONT2 = pygame.font.SysFont("font.ttf", 20)
+UI_FONT = pygame.font.Font("Pokemon.ttf", 20)
 
 COLOR = {
     'light_grey': (200, 200, 200),
@@ -189,6 +191,57 @@ class Ball:
             self.speed_x *= -1
             self.speed_y = int((self.rect.centery - player.rect.centery)
                                * self.speed_y_modifier)
+
+
+class UserInterface:
+    """Default UI class"""
+    def __init__(self):
+        self.choice = 0
+        self.selection_list = ["SINGLE PLAYER",
+                               "LOCAL MULTIPLAYER",
+                               "HOST GAME",
+                               "JOIN GAME",
+                               "QUIT"]
+        self.selection_xy = [(400, 350),
+                             (400, 400),
+                             (400, 450),
+                             (400, 500),
+                             (400, 550)]
+
+    def text_render(self, text_name, font_name, color, surface, coordinate):
+        """Render text_name to surface"""
+        textobj = font_name.render(text_name, 1, color) #render the object
+        textrect = textobj.get_rect()
+        textrect.center = coordinate   # centric text
+        surface.blit(textobj, textrect)  # draw textobj to the screen
+
+    def title_screen(self, asset_class: Assets):
+        """Draw the title screen"""
+        title = pygame.image.load("title.jpg")
+        asset_class.screen.fill(COLOR['black']) # black screen
+        asset_class.screen.blit(title, (178, 0))
+
+        for i, text in enumerate(self.selection_list):
+            if text == self.selection_list[self.choice]:
+                self.text_render(text,
+                                 UI_FONT,
+                                 COLOR['yellow'],
+                                 asset_class.screen,
+                                 self.selection_xy[i])
+            else:
+                self.text_render(text,
+                                 UI_FONT,
+                                 COLOR['white'],
+                                 asset_class.screen,
+                                 self.selection_xy[i])
+
+        self.text_render("by Pham K. Lan, Nguyen M. Thien, EEIT2017",
+                         UI_FONT2,
+                         COLOR['white'],
+                         asset_class.screen,
+                         (158, 593))
+
+        asset_class.maintain_fps() # update screen
 
 
 if __name__ == '__main__':

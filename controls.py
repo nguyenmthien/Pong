@@ -3,7 +3,6 @@
 import sys
 import pygame
 import assets
-import ui
 
 
 class Control:
@@ -35,7 +34,7 @@ class Control:
                 if event.key == pygame.K_DOWN:
                     asset_class.player.speed -= asset_class.player.control_speed
 
-    def title_screen(self, ui_class: ui.UserInterface):
+    def title_screen(self, ui_class: assets.UserInterface):
         """Title screen input handler"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
