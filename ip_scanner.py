@@ -105,7 +105,7 @@ def main(ips):
     headers = ['IP', 'HOST']
     if SHOW_MAC:
         headers.append('MAC')
-    return print_table(headers, accepted_ips)
+    return (headers, accepted_ips)
 
 def run():
     parser = argparse.ArgumentParser(description='Scan all ip addresses withing a given range')
@@ -135,4 +135,4 @@ def run():
                 if 'IPv4 Address' in i:
                     broadcast = i.split()[-1].strip()
                     ip_base.append('.'.join(broadcast.split('.')[:-1]) + '.1-254')
-    main(ip_base)
+    return main(ip_base)
