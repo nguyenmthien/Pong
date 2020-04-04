@@ -62,11 +62,20 @@ class Networking:
 
     def send_controls(self, asset_class: assets.Assets):
         """Use in client, send control to server"""
+        control = asset_class.get_opponent_speed()
+        self.client_socket.send(str.encode(control))
         pass  # use getter
 
     def recieve_controls(self, asset_class: assets.Assets):
         """Use in server, recieve control from client"""
-        pass  # use setter
+        control = self.socket.recv(2048)  # allow receiving 2048 bits data
+        control_decoded = control.decode("utf-8")  # utf-8 encoding
+        if not control:  # if sending incompleted data
+            print("disconnected")
+        else:
+            asset_class.set_opponent_speed(control_decoded)
+            print(f"Recieved: {control_decoded}")
+        # use setter
 
     def binary_to_dict(self, binary):
         """translate binary to dictionary"""
