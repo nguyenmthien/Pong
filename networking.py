@@ -23,19 +23,19 @@ class Networking:
         self.socket.bind((LOCAL_IP, PORT_SERVER))
         self.is_binded = True
         print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_SERVER}!")
-        self.socket.listen(1)
+        self.socket.listen()
         print("waiting for connection")
 
     def init_client(self):
         """Initialize socket in client mode"""
         self.socket.bind((LOCAL_IP, PORT_CLIENT))
         self.is_binded = True
-        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_SERVER}!")
+        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_CLIENT}!")
 
     def connect_to_sever(self, ip_address):
         """Connect client to server, given IP address"""
         self.socket.connect((ip_address, PORT_SERVER))
-        print(f"Conneted to server at {ip_address}")
+        print(f"Conneted to server at {ip_address}:{PORT_SERVER}")
         self.is_game_running = True
 
     def wait_for_client(self):
@@ -46,7 +46,7 @@ class Networking:
 
     def send_coordinates(self, asset_class: assets.Assets):
         """Send coordinates from asset_class to client"""
-        binary = self.dict_to_binary(asset_class.get_cooridnates())
+        binary = self.dict_to_binary(asset_class.get_coordinates())
         self.client_socket.send(str.encode(binary))
 
     def receive_coordinates(self, asset_class: assets.Assets):
@@ -57,30 +57,35 @@ class Networking:
             print("disconnected")
         else:
             translated_binary = self.binary_to_dict(binary_decoded)
-            asset_class.set_coordinates(translated_binary)
             print(f"Recieved: {translated_binary}")
+            if translated_binary:
+                asset_class.set_coordinates(translated_binary)
 
     def send_controls(self, asset_class: assets.Assets):
         """Use in client, send control to server"""
         control = asset_class.get_opponent_speed()
-        self.client_socket.send(str.encode(control))
-        pass  # use getter
+        self.socket.send(str(control).encode('utf-8'))
 
     def recieve_controls(self, asset_class: assets.Assets):
         """Use in server, recieve control from client"""
-        control = self.socket.recv(2048)  # allow receiving 2048 bits data
-        control_decoded = control.decode("utf-8")  # utf-8 encoding
-        if not control:  # if sending incompleted data
-            print("disconnected")
-        else:
-            asset_class.set_opponent_speed(control_decoded)
-            print(f"Recieved: {control_decoded}")
-        # use setter
+        try:
+            control = self.socket.recv(2048)  # allow receiving 2048 bits data
+            control_decoded = control.decode("utf-8")  # utf-8 encoding
+            if control is False:  # if sending incompleted data
+                print("disconnected")
+            else:
+                asset_class.set_opponent_speed(control_decoded)
+                print(f"Recieved: {control_decoded}")
+        except OSError:
+            pass
 
     def binary_to_dict(self, binary):
         """translate binary to dictionary"""
         jsn = ''.join(chr(int(x, 2)) for x in binary.split())
-        return json.loads(jsn)
+        try:
+            return json.loads(jsn)
+        except json.decoder.JSONDecodeError:
+            return False
 
     def dict_to_binary(self, dictionary):
         """Translate dictionary to binary"""

@@ -29,7 +29,7 @@ if __name__ == "__main__":
             if NET.is_binded is False:
                 NET.init_server()
             if NET.is_binded is True and NET.is_game_running is False:
-                pass  # UI.waiting for connection
+                NET.wait_for_client()  # UI.waiting for connection
             while NET.is_game_running is True:
                 NET.send_coordinates(ASSETS)
                 CONTROL.game_input(ASSETS)
@@ -46,6 +46,6 @@ if __name__ == "__main__":
                 # UI.choose_server()
                 NET.connect_to_sever(networking.LOCAL_IP)
             while NET.is_game_running is True:
-                CONTROL.client(ASSETS)
+                CONTROL.client(ASSETS, NET)
                 ASSETS.draw_client()
                 NET.receive_coordinates(ASSETS)

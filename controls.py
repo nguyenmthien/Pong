@@ -3,7 +3,7 @@
 import sys
 import pygame
 import assets
-
+import networking
 
 class Control:
     """All controls for game"""
@@ -98,7 +98,7 @@ class Control:
                 if event.key == pygame.K_s:
                     asset_class.opponent.speed -= asset_class.opponent.control_speed
 
-    def client(self, asset_class: assets.Assets):
+    def client(self, asset_class: assets.Assets, networking_class: networking.Networking):
         """Client mode input handler"""
         asset_class.opponent.previous_speed = asset_class.opponent.speed
         for event in pygame.event.get():
@@ -122,5 +122,6 @@ class Control:
                     asset_class.opponent.reset()
                     asset_class.ball.start()
 
-            if asset_class.opponent.speed == asset_class.opponent.previous_speed:
-                pass
+            if asset_class.opponent.speed != asset_class.opponent.previous_speed:
+                networking_class.send_controls(asset_class)
+                print(f"Sent control {asset_class.player.speed}")

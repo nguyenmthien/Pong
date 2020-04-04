@@ -57,6 +57,7 @@ class Assets:
                            (SCREEN_WIDTH / 2, SCREEN_HEIGHT)) # draw middle line
         self.screen.blit(self.player.score, (int(3/4*SCREEN_WIDTH - 20), 20))
         self.screen.blit(self.opponent.score, (int(SCREEN_WIDTH/4 - 20), 20))
+        pygame.display.flip()
 
     def maintain_fps(self):
         """Make sure game run at assests.FPS"""
