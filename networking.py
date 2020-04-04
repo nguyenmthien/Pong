@@ -22,7 +22,7 @@ class Networking:
         """Initialize socket in server mode"""
         self.socket.bind((LOCAL_IP, PORT_SERVER))
         self.is_binded = True
-        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_SERVER}!")
+        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_SERVER}")
         self.socket.listen()
         print("waiting for connection")
 
@@ -30,7 +30,7 @@ class Networking:
         """Initialize socket in client mode"""
         self.socket.bind((LOCAL_IP, PORT_CLIENT))
         self.is_binded = True
-        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_CLIENT}!")
+        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_CLIENT}")
 
     def connect_to_sever(self, ip_address):
         """Connect client to server, given IP address"""
@@ -41,7 +41,9 @@ class Networking:
     def wait_for_client(self):
         """Wait and confirm the client"""
         self.client_socket, self.client_address = self.socket.accept()
+        self.client_socket.settimeout(0.5/assets.FPS)
         print(f"Conneted to client at {self.client_address}")
+        print(self.client_socket)
         self.is_game_running = True
 
     def send_coordinates(self, asset_class: assets.Assets):
@@ -72,14 +74,14 @@ class Networking:
     def recieve_controls(self, asset_class: assets.Assets):
         """Use in server, recieve control from client"""
         try:
-            control = self.socket.recv(2048)  # allow receiving 2048 bits data
-            control_decoded = control.decode("utf-8")  # utf-8 encoding
+            control = self.client_socket.recv(8)  
+            control = control.decode('utf-8')
             if control is False:  # if sending incompleted data
                 print("disconnected")
             else:
-                asset_class.set_opponent_speed(control_decoded)
-                print(f"Recieved: {control_decoded}")
-        except OSError:
+                asset_class.set_opponent_speed(int(control))
+                print(f"Recieved: {control}")
+        except socket.timeout:
             pass
 
     def binary_to_dict(self, binary):

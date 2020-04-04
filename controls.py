@@ -124,4 +124,3 @@ class Control:
 
             if asset_class.opponent.speed != asset_class.opponent.previous_speed:
                 networking_class.send_controls(asset_class)
-                print(f"Sent control {asset_class.player.speed}")

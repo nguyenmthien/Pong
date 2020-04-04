@@ -55,6 +55,12 @@ class Assets:
                            COLOR['light_grey'],
                            (SCREEN_WIDTH / 2, 0),
                            (SCREEN_WIDTH / 2, SCREEN_HEIGHT)) # draw middle line
+        self.player.score = DISPLAY_FONT.render(str(self.player.score_value),
+                                                1,
+                                                COLOR['light_grey'])
+        self.opponent.score = DISPLAY_FONT.render(str(self.opponent.score_value),
+                                                  1,
+                                                  COLOR['light_grey'])
         self.screen.blit(self.player.score, (int(3/4*SCREEN_WIDTH - 20), 20))
         self.screen.blit(self.opponent.score, (int(SCREEN_WIDTH/4 - 20), 20))
         pygame.display.flip()
@@ -66,15 +72,19 @@ class Assets:
 
     def get_coordinates(self):
         """Return assets center coordinates"""
-        return {'ball'      :self.ball.rect.center,
-                'player'    :self.player.rect.center,
-                'opponent'  :self.opponent.rect.center,}
+        return {'ball'             :self.ball.rect.center,
+                'player'           :self.player.rect.center,
+                'opponent'         :self.opponent.rect.center,
+                'player score'     :self.player.score_value,
+                'opponent score'   :self.opponent.score_value}
 
     def set_coordinates(self, coords: dict):
         """Assign coordinates to the object"""
         self.ball.rect.center = coords['ball']
         self.player.rect.center = coords['player']
         self.opponent.rect.center = coords['opponent']
+        self.player.score_value = coords['player score']
+        self.opponent.score_value = coords['opponent score']
 
     def get_opponent_speed(self):
         """Return opponent speed"""

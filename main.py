@@ -33,11 +33,11 @@ if __name__ == "__main__":
                 NET.wait_for_client()  # UI.waiting for connection
             while NET.is_game_running is True:
                 CONTROL.game_input(ASSETS)
-                NET.recieve_controls(ASSETS)
                 ASSETS.ball.animation(ASSETS.opponent, ASSETS.player)
                 ASSETS.player.animation()
                 ASSETS.opponent.animation()
                 SERVER_SEND = threading.Thread(target=NET.send_coordinates(ASSETS))
+                SERVER_RECV = threading.Thread(target=NET.recieve_controls(ASSETS))
                 ASSETS.draw_playing_field()
         while CONTROL.current_menu == "local network client":
             if NET.is_binded is False:
@@ -46,6 +46,6 @@ if __name__ == "__main__":
                 # UI.choose_server()
                 NET.connect_to_sever(networking.LOCAL_IP)
             while NET.is_game_running is True:
-                CONTROL.client(ASSETS, NET)
                 ASSETS.draw_client()
                 NET.receive_coordinates(ASSETS)
+                CLIENT_SEND = threading.Thread(target=CONTROL.client(ASSETS, NET))
