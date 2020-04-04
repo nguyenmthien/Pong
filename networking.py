@@ -47,7 +47,10 @@ class Networking:
     def send_coordinates(self, asset_class: assets.Assets):
         """Send coordinates from asset_class to client"""
         binary = self.dict_to_binary(asset_class.get_coordinates())
-        self.client_socket.send(str.encode(binary))
+        try:
+            self.client_socket.send(str.encode(binary))
+        except AttributeError:
+            pass
 
     def receive_coordinates(self, asset_class: assets.Assets):
         """Use in client, recive data from server and decode it"""
