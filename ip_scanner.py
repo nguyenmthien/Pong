@@ -1,8 +1,11 @@
+"""Scan IP
+"""
 import socket
 import os
 import subprocess
 from threading import Thread
 import argparse
+
 
 FNULL = open(os.devnull, 'w')
 IS_ON_POSIX = os.name == 'posix'
@@ -12,26 +15,8 @@ USE_ARP = False
 KNOWN_ARP_ERRORS_POSIX = ['-- no entry', '(incomplete)']
 KNOWN_ARP_ERRORS_NT = ['No ARP Entries Found.']
 
-def print_table(headers, table, gap=None):
-    if gap is None:
-        row_format = ''
-        for i, h in enumerate(headers):
-            gap = 0
-            gap = max(gap, len(h))
-            for j in table:
-                gap = max(gap, len(j[i]))
-            gap += 1
-            row_format += "{:>%d}" % gap
-
-    else:
-        row_format = ("{:>%d}" % gap) * len(headers)
-    print(row_format.format(*headers))
-    for row in table:
-        print(row_format.format(*row))
-
-    return gap
-
 def mac_for_ip(ip):
+    """Scan mac address"""
     if IS_ON_POSIX:
         output = subprocess.check_output(['arp', '-n', ip]).decode('ascii')
         for i in KNOWN_ARP_ERRORS_POSIX:
@@ -43,6 +28,7 @@ def mac_for_ip(ip):
         return output.splitlines()[3].split()[1].replace('-', ':')
 
 def scan_ip_addr(ip):
+    """Scan IP address"""
     if USE_ARP:
         if IS_ON_POSIX:
             output = subprocess.check_output(['arp', '-n', ip], stderr=subprocess.STDOUT).decode('ascii')
@@ -79,6 +65,7 @@ def ip_thread(ip, ips):
 
 
 def main(ips):
+    """Return IP address and Host"""
     all_threads = []
     accepted_ips = []
     for ip_base in ips:
@@ -108,6 +95,7 @@ def main(ips):
     return (headers, accepted_ips)
 
 def run():
+    """if __name__ == '__main__'"""
     parser = argparse.ArgumentParser(description='Scan all ip addresses withing a given range')
     parser.add_argument('ip_ranges', metavar='ip range', type=str, nargs='*', default=[],
                         help='a range of ips to scan, if none is given the local net will be used')
