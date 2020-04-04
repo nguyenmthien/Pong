@@ -74,7 +74,7 @@ class Networking:
     def recieve_controls(self, asset_class: assets.Assets):
         """Use in server, recieve control from client"""
         try:
-            control = self.client_socket.recv(8)  
+            control = self.client_socket.recv(8)
             control = control.decode('utf-8')
             if control is False:  # if sending incompleted data
                 print("disconnected")
