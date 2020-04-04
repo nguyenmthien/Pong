@@ -4,7 +4,6 @@ import socket
 import os
 import subprocess
 from threading import Thread
-import argparse
 
 
 FNULL = open(os.devnull, 'w')
@@ -15,50 +14,57 @@ USE_ARP = False
 KNOWN_ARP_ERRORS_POSIX = ['-- no entry', '(incomplete)']
 KNOWN_ARP_ERRORS_NT = ['No ARP Entries Found.']
 
-def mac_for_ip(ip):
+def mac_for_ip(ip_addr):
     """Scan mac address"""
     if IS_ON_POSIX:
-        output = subprocess.check_output(['arp', '-n', ip]).decode('ascii')
+        output = subprocess.check_output(['arp', '-n', ip_addr]).decode('ascii')
         for i in KNOWN_ARP_ERRORS_POSIX:
             if i in output:
                 raise Exception()
         return output.split()[3]
     else:
-        output = subprocess.check_output(['arp', '-a', ip]).decode('ascii')
+        output = subprocess.check_output(['arp', '-a', ip_addr]).decode('ascii')
         return output.splitlines()[3].split()[1].replace('-', ':')
 
-def scan_ip_addr(ip):
-    """Scan IP address"""
+def scan_ip_addr(ip_addr):
+    """Scan IP address using arp or ping"""
     if USE_ARP:
         if IS_ON_POSIX:
-            output = subprocess.check_output(['arp', '-n', ip], stderr=subprocess.STDOUT).decode('ascii')
+            output = subprocess.check_output(['arp', '-n', ip_addr],
+                                             stderr=subprocess.STDOUT).decode('ascii')
             for i in KNOWN_ARP_ERRORS_POSIX:
                 if i in output:
                     return False
             return True
         else:
-            output = subprocess.check_output(['arp', '-a', ip], stderr=subprocess.STDOUT).decode('ascii')
+            output = subprocess.check_output(['arp', '-a', ip_addr],
+                                             stderr=subprocess.STDOUT).decode('ascii')
             for i in KNOWN_ARP_ERRORS_NT:
                 if i in output:
                     return False
             return True
     else:
         if IS_ON_POSIX:
-            return not subprocess.call(['ping', '-c', '1', '-t', '1', ip], stdout=FNULL, stderr=subprocess.STDOUT)
+            return not subprocess.call(['ping', '-c', '1', '-t', '1', ip_addr],
+                                       stdout=FNULL,
+                                       stderr=subprocess.STDOUT)
         else:
-            return not subprocess.call(['ping', '-n', '1', '-w', '1000', ip], stdout=FNULL, stderr=subprocess.STDOUT)
+            return not subprocess.call(['ping', '-n', '1', '-w', '1000', ip_addr],
+                                       stdout=FNULL,
+                                       stderr=subprocess.STDOUT)
 
-def ip_thread(ip, ips):
-    if scan_ip_addr(ip):
+def ip_thread(ip_addr, ips):
+    """Thread for multithreading"""
+    if scan_ip_addr(ip_addr):
         try:
-            host, _, _ = socket.gethostbyaddr(ip)
+            host, _, _ = socket.gethostbyaddr(ip_addr)
         except socket.herror:
             host = ''
-        res = [ip, host]
+        res = [ip_addr, host]
         if SHOW_MAC:
             try:
-                mac_addr = mac_for_ip(ip)
-            except:
+                mac_addr = mac_for_ip(ip_addr)
+            except:  # pylint: disable=W0702
                 mac_addr = ''
             res.append(mac_addr)
         ips.append(res)
@@ -68,19 +74,20 @@ def main(ips):
     """Return IP address and Host"""
     all_threads = []
     accepted_ips = []
-    for ip_base in ips:
-        p1, p2, p3, p4 = [[int(y) for y in x.split('-')] for x in ip_base.split('.')]
-        for p in (p1, p2, p3, p4):
-            if len(p) == 1:
-                p.append(p[0]+1)
+    for ip_addr in ips:
+        p_1, p_2, p_3, p_4 = [[int(y) for y in x.split('-')] for x in ip_addr.split('.')]
+        for p_i in (p_1, p_2, p_3, p_4):
+            if len(p_i) == 1:
+                p_i.append(p_i[0]+1)
             else:
-                p[1] += 1
+                p_i[1] += 1
 
-        for i in range(p1[0], p1[1]):
-            for j in range(p2[0], p2[1]):
-                for k in range(p3[0], p3[1]):
-                    for x in range(p4[0], p4[1]):
-                        temp = Thread(target=ip_thread, args=(f'{i}.{j}.{k}.{x}', accepted_ips))
+        for i_1 in range(p_1[0], p_1[1]):
+            for i_2 in range(p_2[0], p_2[1]):
+                for i_3 in range(p_3[0], p_3[1]):
+                    for i_4 in range(p_4[0], p_4[1]):
+                        temp = Thread(target=ip_thread,
+                                      args=(f'{i_1}.{i_2}.{i_3}.{i_4}', accepted_ips))
                         all_threads.append(temp)
                         temp.start()
     while True:
@@ -92,23 +99,11 @@ def main(ips):
     headers = ['IP', 'HOST']
     if SHOW_MAC:
         headers.append('MAC')
-    return (headers, accepted_ips)
+    return accepted_ips
 
-def run():
-    """if __name__ == '__main__'"""
-    parser = argparse.ArgumentParser(description='Scan all ip addresses withing a given range')
-    parser.add_argument('ip_ranges', metavar='ip range', type=str, nargs='*', default=[],
-                        help='a range of ips to scan, if none is given the local net will be used')
-    parser.add_argument('-m', '--mac', dest='show_mac', action='store_const',
-                        const=True, default=False,
-                        help='if used, the table will show the mac address of the scanned devices')
-    parser.add_argument('-a', '--arp', dest='use_arp', action='store_const',
-                        const=True, default=False,
-                        help='if used, the request sent will be an arp request (otherwise a ping request)')
-    args = parser.parse_args()
-    SHOW_MAC = args.show_mac
-    USE_ARP = args.use_arp
-    ip_base = args.ip_ranges
+def get_ip_base():
+    """Find IP base for sacnning"""
+    ip_base = []
     if len(ip_base) == 0:
         if IS_ON_POSIX:
             broadcast = []
@@ -123,4 +118,8 @@ def run():
                 if 'IPv4 Address' in i:
                     broadcast = i.split()[-1].strip()
                     ip_base.append('.'.join(broadcast.split('.')[:-1]) + '.1-254')
-    return main(ip_base)
+    return ip_base
+
+if __name__ == '__main__':
+
+    print(main(get_ip_base()))
