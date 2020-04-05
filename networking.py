@@ -43,6 +43,7 @@ class Networking:
 
     def wait_for_client(self):
         """Wait and confirm the client"""
+        # TODO: add IP scanning
         self.client_socket, self.client_address = self.socket.accept()
         self.client_socket.settimeout(0.5/assets.FPS)
         print(f"Conneted to client at {self.client_address}")

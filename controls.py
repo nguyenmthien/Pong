@@ -116,6 +116,8 @@ class Control:
                 if event.key == pygame.K_s:
                     asset_class.opponent.speed -= asset_class.opponent.control_speed
                 if event.key == pygame.K_ESCAPE:
+                    networking_class.is_game_running = False
+                    # TODO: add network disconnect
                     self.current_menu = "title screen"
                     print("end tcp client")
                     asset_class.player.reset()
