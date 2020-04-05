@@ -255,19 +255,24 @@ class UserInterface:
 
         asset_class.maintain_fps() # update screen
 
-    def wait_for_client(self, asset_class: Assets):
+    def wait_for_client(self, asset_class: Assets, ip_addr: str):
         """Use when waiting for client in server mode"""
         asset_class.screen.fill(COLOR['black'])
         self.text_render("WAITING FOR CLIENT",
                          UI_FONT,
                          COLOR['white'],
                          asset_class.screen,
-                         (400, 275))
-        self.text_render("Press ESC to exit to title screen",
+                         (400, 250))
+        self.text_render(f"YOUR IP ADDRESS IS {ip_addr}",
                          UI_FONT,
                          COLOR['white'],
                          asset_class.screen,
-                         (400, 325))
+                         (400, 300))
+        self.text_render("PRESS ESC TO EXIT TO TITLE SCREEN",
+                         UI_FONT,
+                         COLOR['white'],
+                         asset_class.screen,
+                         (400, 350))
         asset_class.maintain_fps()
 
     def choose_server(self, asset_class: Assets):
@@ -278,6 +283,6 @@ class UserInterface:
 if __name__ == '__main__':
     ASSETS = Assets()
     UI = UserInterface()
-    UI.wait_for_client(ASSETS)
+    UI.wait_for_client(ASSETS, "192.168.0.12")
     import time
     time.sleep(3)

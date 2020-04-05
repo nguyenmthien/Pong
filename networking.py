@@ -74,7 +74,7 @@ class Networking:
     def recieve_controls(self, asset_class: assets.Assets):
         """Use in server, recieve control from client"""
         try:
-            control = self.client_socket.recv(8)
+            control = self.client_socket.recv(5)
             control = control.decode('utf-8')
             if control is False:  # if sending incompleted data
                 print("disconnected")
@@ -82,6 +82,8 @@ class Networking:
                 asset_class.set_opponent_speed(int(control))
                 print(f"Recieved: {control}")
         except socket.timeout:
+            pass
+        except ValueError:
             pass
 
 def binary_to_dict(binary):
