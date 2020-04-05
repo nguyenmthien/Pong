@@ -73,7 +73,7 @@ class ScanIP:
             ips.append(res)
 
     def main(self, ips):
-        """Return IP address and Host"""
+        """Return list of available [IP, hostname, (MAC)]"""
         all_threads = []
         accepted_ips = []
         for ip_addr in ips:
@@ -89,7 +89,7 @@ class ScanIP:
                     for i_3 in range(p_3[0], p_3[1]):
                         for i_4 in range(p_4[0], p_4[1]):
                             temp = threading.Thread(target=self.ip_thread,
-                                          args=(f'{i_1}.{i_2}.{i_3}.{i_4}', accepted_ips))
+                                                    args=(f'{i_1}.{i_2}.{i_3}.{i_4}', accepted_ips))
                             all_threads.append(temp)
                             temp.start()
         while True:
@@ -98,9 +98,7 @@ class ScanIP:
                     break
             else:
                 break
-        headers = ['IP', 'HOST']
-        if self.show_mac:
-            headers.append('MAC')
+
         return accepted_ips
 
     def get_ip_base(self):
