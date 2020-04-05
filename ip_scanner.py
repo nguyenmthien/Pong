@@ -3,18 +3,11 @@
 import socket
 import os
 import subprocess
-from threading import Thread
+import threading
 
-FNULL = open(os.devnull, 'w')
-IS_ON_POSIX = os.name == 'posix'
-SHOW_MAC = False
-USE_ARP = False
-
-KNOWN_ARP_ERRORS_POSIX = ['-- no entry', '(incomplete)']
-KNOWN_ARP_ERRORS_NT = ['No ARP Entries Found.']
 
 class ScanIP:
-    """Class for IP Scanner"""
+    """Scan IP for ping-able hosts"""
     def __init__(self):
         self.fnull = open(os.devnull, 'w')
         self.is_on_posix = os.name == 'posix'
@@ -25,7 +18,7 @@ class ScanIP:
         self.known_arp_errors_nt = ['No ARP Entries Found.']
 
     def mac_for_ip(self, ip_addr):
-        """Scan mac address"""
+        """Return MAC address from parsing arp"""
         if self.is_on_posix:
             output = subprocess.check_output(['arp', '-n', ip_addr]).decode('ascii')
             for i in self.known_arp_errors_posix:
@@ -79,7 +72,6 @@ class ScanIP:
                 res.append(mac_addr)
             ips.append(res)
 
-
     def main(self, ips):
         """Return IP address and Host"""
         all_threads = []
@@ -96,7 +88,7 @@ class ScanIP:
                 for i_2 in range(p_2[0], p_2[1]):
                     for i_3 in range(p_3[0], p_3[1]):
                         for i_4 in range(p_4[0], p_4[1]):
-                            temp = Thread(target=self.ip_thread,
+                            temp = threading.Thread(target=self.ip_thread,
                                           args=(f'{i_1}.{i_2}.{i_3}.{i_4}', accepted_ips))
                             all_threads.append(temp)
                             temp.start()
@@ -130,6 +122,7 @@ class ScanIP:
                         ip_base.append('.'.join(broadcast.split('.')[:-1]) + '.1-254')
         return ip_base
 
+
 if __name__ == '__main__':
-    ob = ScanIP()
-    ob.main(ob.get_ip_base())
+    SCAN_IP = ScanIP()
+    print(SCAN_IP.main(SCAN_IP.get_ip_base()))
