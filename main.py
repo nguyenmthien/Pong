@@ -30,7 +30,8 @@ if __name__ == "__main__":
             if NET.is_binded is False:
                 NET.init_server()
             if NET.is_binded is True and NET.is_game_running is False:
-                NET.wait_for_client()  # UI.waiting for connection
+                NET.wait_for_client()
+                UI.wait_for_client(ASSETS)
             while NET.is_game_running is True:
                 CONTROL.game_input(ASSETS)
                 ASSETS.ball.animation(ASSETS.opponent, ASSETS.player)

@@ -9,7 +9,7 @@ FPS = 60
 pygame.font.init()
 DISPLAY_FONT = pygame.font.Font('font.ttf', 80)
 UI_FONT2 = pygame.font.Font("font.ttf", 15)
-UI_FONT = pygame.font.Font("Pokemon.ttf", 20)
+UI_FONT = pygame.font.Font("font.ttf", 30)
 
 COLOR = {
     'light_grey': (200, 200, 200),
@@ -218,6 +218,7 @@ class UserInterface:
                              (400, 425),
                              (400, 475),
                              (400, 525)]
+        self.ip_add_list = []
 
     def text_render(self, text_name, font_name, color, surface, coordinate):
         """Render text_name to surface"""
@@ -250,12 +251,33 @@ class UserInterface:
                          UI_FONT2,
                          COLOR['white'],
                          asset_class.screen,
-                         (200, 593))
+                         (400, 593))
 
         asset_class.maintain_fps() # update screen
 
+    def wait_for_client(self, asset_class: Assets):
+        """Use when waiting for client in server mode"""
+        asset_class.screen.fill(COLOR['black'])
+        self.text_render("WAITING FOR CLIENT",
+                         UI_FONT,
+                         COLOR['white'],
+                         asset_class.screen,
+                         (400, 275))
+        self.text_render("Press ESC to exit to title screen",
+                         UI_FONT,
+                         COLOR['white'],
+                         asset_class.screen,
+                         (400, 325))
+        asset_class.maintain_fps()
+
+    def choose_server(self, asset_class: Assets):
+        """Server choosing screen, use in client mode"""
+        asset_class.screen.fill(COLOR['black'])
+        #TODO: draw hosts
 
 if __name__ == '__main__':
-    # setup()
-    # draw_playing_field()
-    pass
+    ASSETS = Assets()
+    UI = UserInterface()
+    UI.wait_for_client(ASSETS)
+    import time
+    time.sleep(3)

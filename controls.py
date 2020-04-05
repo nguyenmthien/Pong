@@ -124,3 +124,18 @@ class Control:
 
             if asset_class.opponent.speed != asset_class.opponent.previous_speed:
                 networking_class.send_controls(asset_class)
+
+    def wait(self, asset_class: assets.Assets):
+        """waiting screen input handler"""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.current_menu = "title screen"
+                    print("end hosting")
+                    asset_class.player.reset()
+                    asset_class.opponent.reset()
+                    asset_class.ball.start()
+                    #TODO: end hosting

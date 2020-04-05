@@ -48,7 +48,7 @@ class Networking:
 
     def send_coordinates(self, asset_class: assets.Assets):
         """Send coordinates from asset_class to client"""
-        binary = self.dict_to_binary(asset_class.get_coordinates())
+        binary = dict_to_binary(asset_class.get_coordinates())
         try:
             self.client_socket.send(str.encode(binary))
         except AttributeError:
@@ -61,7 +61,7 @@ class Networking:
         if not binary:  # if sending incompleted data
             print("disconnected")
         else:
-            translated_binary = self.binary_to_dict(binary_decoded)
+            translated_binary = binary_to_dict(binary_decoded)
             print(f"Recieved: {translated_binary}")
             if translated_binary:
                 asset_class.set_coordinates(translated_binary)
@@ -84,19 +84,19 @@ class Networking:
         except socket.timeout:
             pass
 
-    def binary_to_dict(self, binary):
-        """translate binary to dictionary"""
-        jsn = ''.join(chr(int(x, 2)) for x in binary.split())
-        try:
-            return json.loads(jsn)
-        except json.decoder.JSONDecodeError:
-            return False
+def binary_to_dict(binary):
+    """translate binary to dictionary"""
+    jsn = ''.join(chr(int(x, 2)) for x in binary.split())
+    try:
+        return json.loads(jsn)
+    except json.decoder.JSONDecodeError:
+        return False
 
-    def dict_to_binary(self, dictionary):
-        """Translate dictionary to binary"""
-        string = json.dumps(dictionary)
-        binary = ' '.join(format(ord(letter), 'b') for letter in string)
-        return binary
+def dict_to_binary(dictionary):
+    """Translate dictionary to binary"""
+    string = json.dumps(dictionary)
+    binary = ' '.join(format(ord(letter), 'b') for letter in string)
+    return binary
 
 
 if __name__ == "__main__":
