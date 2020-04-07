@@ -10,87 +10,6 @@ LOCAL_IP = socket.gethostbyname(socket.gethostname())  # only known to work on o
 PORT_SERVER = 2033
 PORT_CLIENT = 2056
 
-
-class Networking:
-    """Networking default class"""
-    def __init__(self):
-        self.reply = ""
-        self.is_game_running = False
-        self.is_binded = False
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket = None
-        self.client_address = None
-
-    def init_server(self):
-        """Initialize socket in server mode"""
-        self.socket.bind((LOCAL_IP, PORT_SERVER))
-        self.is_binded = True
-        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_SERVER}")
-        self.socket.listen()
-        print("waiting for connection")
-
-    def init_client(self):
-        """Initialize socket in client mode"""
-        self.socket.bind((LOCAL_IP, PORT_CLIENT))
-        self.is_binded = True
-        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_CLIENT}")
-
-    def connect_to_sever(self, ip_address):
-        """Connect client to server, given IP address"""
-        self.socket.connect((ip_address, PORT_SERVER))
-        print(f"Conneted to server at {ip_address}:{PORT_SERVER}")
-        self.is_game_running = True
-
-    def wait_for_client(self):
-        """Wait and confirm the client"""
-        # TODO: add IP scanning
-        self.client_socket, self.client_address = self.socket.accept()
-        self.client_socket.settimeout(0.5/assets.FPS)
-        print(f"Conneted to client at {self.client_address}")
-        print(self.client_socket)
-        self.is_game_running = True
-
-    def send_coordinates(self, asset_class: assets.Assets):
-        """Send coordinates from asset_class to client"""
-        binary = dict_to_binary(asset_class.get_coordinates())
-        try:
-            self.client_socket.send(str.encode(binary))
-        except AttributeError:
-            pass
-
-    def receive_coordinates(self, asset_class: assets.Assets):
-        """Use in client, recive data from server and decode it"""
-        binary = self.socket.recv(2048)  # allow receiving 2048 bits data
-        binary_decoded = binary.decode("utf-8")  # utf-8 encoding
-        if not binary:  # if sending incompleted data
-            print("disconnected")
-        else:
-            translated_binary = binary_to_dict(binary_decoded)
-            print(f"Recieved: {translated_binary}")
-            if translated_binary:
-                asset_class.set_coordinates(translated_binary)
-
-    def send_controls(self, asset_class: assets.Assets):
-        """Use in client, send control to server"""
-        control = asset_class.get_opponent_speed()
-        self.socket.send(str(control).encode('utf-8'))
-
-    def recieve_controls(self, asset_class: assets.Assets):
-        """Use in server, recieve control from client"""
-        try:
-            control = self.client_socket.recv(5)
-            control = control.decode('utf-8')
-            if control is False:  # if sending incompleted data
-                print("disconnected")
-            else:
-                asset_class.set_opponent_speed(int(control))
-                print(f"Recieved: {control}")
-        except socket.timeout:
-            pass
-        except ValueError:
-            pass
-
-
 class ScanIP:
     """Scan IP for ping-able hosts"""
     def __init__(self):
@@ -157,6 +76,25 @@ class ScanIP:
                 res.append(mac_addr)
             ips.append(res)
 
+    def get_ip_base(self):
+        """Find IP base for scanning"""
+        ip_base = []
+        if len(ip_base) == 0:
+            if self.is_on_posix:
+                broadcast = []
+                ifconfig = subprocess.check_output('ifconfig').decode('ascii').splitlines()
+                for i in ifconfig:
+                    if 'broadcast' in i:
+                        broadcast = i.split('broadcast')[1].strip()
+                        ip_base.append('.'.join(broadcast.split('.')[:-1]) + '.1-254')
+            else:
+                ipconfig = subprocess.check_output('ipconfig').decode('ascii').splitlines()
+                for i in ipconfig:
+                    if 'IPv4 Address' in i:
+                        broadcast = i.split()[-1].strip()
+                        ip_base.append('.'.join(broadcast.split('.')[:-1]) + '.1-254')
+        return ip_base
+
     def main(self, ips):
         """Return list of available [IP, hostname, (MAC)]"""
         all_threads = []
@@ -186,24 +124,99 @@ class ScanIP:
 
         return accepted_ips
 
-    def get_ip_base(self):
-        """Find IP base for scanning"""
-        ip_base = []
-        if len(ip_base) == 0:
-            if self.is_on_posix:
-                broadcast = []
-                ifconfig = subprocess.check_output('ifconfig').decode('ascii').splitlines()
-                for i in ifconfig:
-                    if 'broadcast' in i:
-                        broadcast = i.split('broadcast')[1].strip()
-                        ip_base.append('.'.join(broadcast.split('.')[:-1]) + '.1-254')
+
+class Networking:
+    """Networking default class"""
+    def __init__(self):
+        self.reply = ""
+        self.is_game_running = False
+        self.is_binded = False
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket = None
+        self.client_address = None
+        self.server_list = []
+
+    def init_server(self):
+        """Initialize socket in server mode"""
+        self.socket.bind((LOCAL_IP, PORT_SERVER))
+        self.is_binded = True
+        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_SERVER}")
+        self.socket.listen()
+        print("waiting for connection")
+
+    def wait_for_client(self):
+        """Wait and confirm the client"""
+        # TODO: change to fit with client ritual
+        self.client_socket, self.client_address = self.socket.accept()
+        self.client_socket.settimeout(0.5/assets.FPS)
+        print(f"Conneted to client at {self.client_address}")
+        print(self.client_socket)
+        self.is_game_running = True
+
+    def init_client(self):
+        """Initialize socket in client mode"""
+        self.socket.bind((LOCAL_IP, PORT_CLIENT))
+        self.is_binded = True
+        print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_CLIENT}")
+
+    def scan_for_server(self, ui_obj: assets.UserInterface, ip_scanner: ScanIP):
+        """Scan for available IPs and pass it to self.server_list"""
+        ui_obj.server_ip_list = []
+        host_list = ip_scanner.main(ip_scanner.get_ip_base())
+        for ip_list in host_list:
+            if self.find_server_ritual(ip_list[0]):
+                ui_obj.server_ip_list.append(ip_list[0])
+
+    def find_server_ritual(self, ip_addr):
+        """Ritual to find if the host is a legitimate pong server"""
+        # TODO: add find server ritual
+        return True
+
+    def connect_to_sever(self, ip_address):
+        """Connect client to server, given IP address"""
+        self.socket.connect((ip_address, PORT_SERVER))
+        print(f"Conneted to server at {ip_address}:{PORT_SERVER}")
+        self.is_game_running = True
+
+    def send_coordinates(self, assets_obj: assets.Assets):
+        """Send coordinates from assets_obj to client"""
+        binary = dict_to_binary(assets_obj.get_coordinates())
+        try:
+            self.client_socket.send(str.encode(binary))
+        except AttributeError:
+            pass
+
+    def receive_coordinates(self, assets_obj: assets.Assets):
+        """Use in client, recive data from server and decode it"""
+        binary = self.socket.recv(2048)  # allow receiving 2048 bits data
+        binary_decoded = binary.decode("utf-8")  # utf-8 encoding
+        if not binary:  # if sending incompleted data
+            print("disconnected")
+        else:
+            translated_binary = binary_to_dict(binary_decoded)
+            print(f"Recieved: {translated_binary}")
+            if translated_binary:
+                assets_obj.set_coordinates(translated_binary)
+
+    def send_controls(self, assets_obj: assets.Assets):
+        """Use in client, send control to server"""
+        control = assets_obj.get_opponent_speed()
+        self.socket.send(str(control).encode('utf-8'))
+
+    def recieve_controls(self, assets_obj: assets.Assets):
+        """Use in server, recieve control from client"""
+        try:
+            control = self.client_socket.recv(5)
+            control = control.decode('utf-8')
+            if control is False:  # if sending incompleted data
+                print("disconnected")
             else:
-                ipconfig = subprocess.check_output('ipconfig').decode('ascii').splitlines()
-                for i in ipconfig:
-                    if 'IPv4 Address' in i:
-                        broadcast = i.split()[-1].strip()
-                        ip_base.append('.'.join(broadcast.split('.')[:-1]) + '.1-254')
-        return ip_base
+                assets_obj.set_opponent_speed(int(control))
+                print(f"Recieved: {control}")
+        except socket.timeout:
+            pass
+        except ValueError:
+            pass
 
 
 def binary_to_dict(binary):
@@ -223,5 +236,21 @@ def dict_to_binary(dictionary):
 
 
 if __name__ == "__main__":
+    import time
+
     SCAN_IP = ScanIP()
+    T3 = time.time()
     print(SCAN_IP.main(SCAN_IP.get_ip_base()))
+    T4 = time.time()
+    print(T4-T3)
+
+    ASSETS = assets.Assets()
+    UI = assets.UserInterface()
+    NET = Networking()
+    UI.choose_server(ASSETS)
+    T1 = time.time()
+    NET.scan_for_server(UI, SCAN_IP)
+    T2 = time.time()
+    UI.choose_server(ASSETS)
+    print(T2-T1)
+    time.sleep(5)

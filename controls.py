@@ -10,7 +10,7 @@ class Control:
     def __init__(self):
         self.current_menu = "title screen"
 
-    def game_input(self, asset_class: assets.Assets):
+    def game_input(self, assets_obj: assets.Assets):
         """Singleplayer input handler"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -18,21 +18,21 @@ class Control:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    asset_class.player.speed -= asset_class.player.control_speed
+                    assets_obj.player.speed -= assets_obj.player.control_speed
                 if event.key == pygame.K_DOWN:
-                    asset_class.player.speed += asset_class.player.control_speed
+                    assets_obj.player.speed += assets_obj.player.control_speed
                 if event.key == pygame.K_ESCAPE:
                     self.current_menu = "title screen"
                     print("end single player")
-                    asset_class.player.reset()
-                    asset_class.opponent.reset()
-                    asset_class.ball.start()
+                    assets_obj.player.reset()
+                    assets_obj.opponent.reset()
+                    assets_obj.ball.start()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_UP:
-                    asset_class.player.speed += asset_class.player.control_speed
+                    assets_obj.player.speed += assets_obj.player.control_speed
                 if event.key == pygame.K_DOWN:
-                    asset_class.player.speed -= asset_class.player.control_speed
+                    assets_obj.player.speed -= assets_obj.player.control_speed
 
     def title_screen(self, ui_class: assets.UserInterface):
         """Title screen input handler"""
@@ -66,7 +66,7 @@ class Control:
                         pygame.quit()
                         sys.exit()
 
-    def local_multiplayer(self, asset_class: assets.Assets):
+    def local_multiplayer(self, assets_obj: assets.Assets):
         """Local multiplayer inputs handler"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -74,60 +74,60 @@ class Control:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    asset_class.player.speed -= asset_class.player.control_speed
+                    assets_obj.player.speed -= assets_obj.player.control_speed
                 if event.key == pygame.K_DOWN:
-                    asset_class.player.speed += asset_class.player.control_speed
+                    assets_obj.player.speed += assets_obj.player.control_speed
                 if event.key == pygame.K_w:
-                    asset_class.opponent.speed -= asset_class.opponent.control_speed
+                    assets_obj.opponent.speed -= assets_obj.opponent.control_speed
                 if event.key == pygame.K_s:
-                    asset_class.opponent.speed += asset_class.opponent.control_speed
+                    assets_obj.opponent.speed += assets_obj.opponent.control_speed
                 if event.key == pygame.K_ESCAPE:
                     self.current_menu = "title screen"
                     print("end local multiplayer")
-                    asset_class.player.reset()
-                    asset_class.opponent.reset()
-                    asset_class.ball.start()
+                    assets_obj.player.reset()
+                    assets_obj.opponent.reset()
+                    assets_obj.ball.start()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_UP:
-                    asset_class.player.speed += asset_class.player.control_speed
+                    assets_obj.player.speed += assets_obj.player.control_speed
                 if event.key == pygame.K_DOWN:
-                    asset_class.player.speed -= asset_class.player.control_speed
+                    assets_obj.player.speed -= assets_obj.player.control_speed
                 if event.key == pygame.K_w:
-                    asset_class.opponent.speed += asset_class.opponent.control_speed
+                    assets_obj.opponent.speed += assets_obj.opponent.control_speed
                 if event.key == pygame.K_s:
-                    asset_class.opponent.speed -= asset_class.opponent.control_speed
+                    assets_obj.opponent.speed -= assets_obj.opponent.control_speed
 
-    def client(self, asset_class: assets.Assets, networking_class: networking.Networking):
+    def client(self, assets_obj: assets.Assets, networking_obj: networking.Networking):
         """Client mode input handler"""
-        asset_class.opponent.previous_speed = asset_class.opponent.speed
+        assets_obj.opponent.previous_speed = assets_obj.opponent.speed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
-                    asset_class.opponent.speed -= asset_class.opponent.control_speed
+                    assets_obj.opponent.speed -= assets_obj.opponent.control_speed
                 if event.key == pygame.K_s:
-                    asset_class.opponent.speed += asset_class.opponent.control_speed
+                    assets_obj.opponent.speed += assets_obj.opponent.control_speed
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:
-                    asset_class.opponent.speed += asset_class.opponent.control_speed
+                    assets_obj.opponent.speed += assets_obj.opponent.control_speed
                 if event.key == pygame.K_s:
-                    asset_class.opponent.speed -= asset_class.opponent.control_speed
+                    assets_obj.opponent.speed -= assets_obj.opponent.control_speed
                 if event.key == pygame.K_ESCAPE:
-                    networking_class.is_game_running = False
+                    networking_obj.is_game_running = False
                     # TODO: add network disconnect
                     self.current_menu = "title screen"
                     print("end tcp client")
-                    asset_class.player.reset()
-                    asset_class.opponent.reset()
-                    asset_class.ball.start()
+                    assets_obj.player.reset()
+                    assets_obj.opponent.reset()
+                    assets_obj.ball.start()
 
-            if asset_class.opponent.speed != asset_class.opponent.previous_speed:
-                networking_class.send_controls(asset_class)
+            if assets_obj.opponent.speed != assets_obj.opponent.previous_speed:
+                networking_obj.send_controls(assets_obj)
 
-    def wait(self, asset_class: assets.Assets):
+    def wait(self, assets_obj: assets.Assets):
         """waiting screen input handler"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -137,7 +137,7 @@ class Control:
                 if event.key == pygame.K_ESCAPE:
                     self.current_menu = "title screen"
                     print("end hosting")
-                    asset_class.player.reset()
-                    asset_class.opponent.reset()
-                    asset_class.ball.start()
+                    assets_obj.player.reset()
+                    assets_obj.opponent.reset()
+                    assets_obj.ball.start()
                     #TODO: end hosting

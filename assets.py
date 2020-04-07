@@ -113,7 +113,9 @@ class Paddle:
         self.ai_speed = 7
         self.control_speed = 6
         self.score_value = 0
-        self.score = DISPLAY_FONT.render(str(self.score_value), 1, COLOR["light_grey"])
+        self.score = DISPLAY_FONT.render(str(self.score_value),
+                                         1,
+                                         COLOR["light_grey"])
 
     def animation(self):
         """Animation of player"""
@@ -135,6 +137,9 @@ class Paddle:
         """Reset score and position"""
         self.score_value = 0
         self.rect.centery = int(SCREEN_HEIGHT/2)
+        self.score = DISPLAY_FONT.render(str(self.score_value),
+                                         1,
+                                         COLOR['light_grey'])
 
     def artificial_intelligence(self, ball_y: int):
         """Single-player AI"""
@@ -218,7 +223,7 @@ class UserInterface:
                              (400, 425),
                              (400, 475),
                              (400, 525)]
-        self.ip_add_list = []
+        self.server_ip_list = []
 
     def text_render(self, text_name, font_name, color, surface, coordinate):
         """Render text_name to surface"""
@@ -278,7 +283,38 @@ class UserInterface:
     def choose_server(self, asset_class: Assets):
         """Server choosing screen, use in client mode"""
         asset_class.screen.fill(COLOR['black'])
-        #TODO: draw hosts
+
+        self.text_render("CHOOSE YOUR DESIRED SERVER",
+                         UI_FONT,
+                         COLOR['white'],
+                         asset_class.screen,
+                         (400, 125))
+        self.text_render("PRESS ESC TO EXIT TO TITLE SCREEN",
+                         UI_FONT,
+                         COLOR['white'],
+                         asset_class.screen,
+                         (400, 175))
+        self.text_render("PRESS F TO REFRESH SERVER LIST",
+                         UI_FONT,
+                         COLOR['white'],
+                         asset_class.screen,
+                         (400, 225))
+
+        for i, text in enumerate(self.server_ip_list):
+            if text == self.server_ip_list[self.choice]:
+                self.text_render(text,
+                                 UI_FONT,
+                                 COLOR['yellow'],
+                                 asset_class.screen,
+                                 self.selection_xy[i])
+            else:
+                self.text_render(text,
+                                 UI_FONT,
+                                 COLOR['white'],
+                                 asset_class.screen,
+                                 self.selection_xy[i])
+
+        asset_class.maintain_fps()
 
 if __name__ == '__main__':
     ASSETS = Assets()
