@@ -138,7 +138,11 @@ class Networking:
 
     def init_server(self):
         """Initialize socket in server mode"""
-        self.socket.bind((LOCAL_IP, PORT_SERVER))
+        try:
+            self.socket.bind((LOCAL_IP, PORT_SERVER))
+        except (ConnectionRefusedError, OSError):
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.bind((LOCAL_IP, PORT_SERVER))        
         self.is_binded = True
         print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_SERVER}")
         self.socket.listen()
@@ -188,15 +192,19 @@ class Networking:
 
     def receive_coordinates(self, assets_obj: assets.Assets):
         """Use in client, recive data from server and decode it"""
-        binary = self.socket.recv(2048)  # allow receiving 2048 bits data
-        binary_decoded = binary.decode("utf-8")  # utf-8 encoding
-        if not binary:  # if sending incompleted data
-            print("disconnected")
-        else:
-            translated_binary = binary_to_dict(binary_decoded)
-            print(f"Recieved: {translated_binary}")
-            if translated_binary:
-                assets_obj.set_coordinates(translated_binary)
+        try:
+            binary = self.socket.recv(2048)  # allow receiving 2048 bits data
+            binary_decoded = binary.decode("utf-8")  # utf-8 encoding
+            if not binary:  # if sending incompleted data
+                print("disconnected")
+                self.network_disconnect()
+            else:
+                translated_binary = binary_to_dict(binary_decoded)
+                print(f"Recieved: {translated_binary}")
+                if translated_binary:
+                    assets_obj.set_coordinates(translated_binary)
+        except OSError:
+            self.network_disconnect()
 
     def send_controls(self, assets_obj: assets.Assets):
         """Use in client, send control to server"""
@@ -210,6 +218,7 @@ class Networking:
             control = control.decode('utf-8')
             if control is False:  # if sending incompleted data
                 print("disconnected")
+                self.network_disconnect()
             else:
                 assets_obj.set_opponent_speed(int(control))
                 print(f"Recieved: {control}")
@@ -217,7 +226,24 @@ class Networking:
             pass
         except ValueError:
             pass
+        except OSError:
+            pass
+    
+    def end_hosting(self):
+        self.is_binded = False
+        self.is_game_running = False
+        try:
+            self.socket.shutdown(socket.SHUT_RDWR)
+        except (socket.error, OSError, ValueError):    
+            pass
+        self.socket.close()
 
+    def network_disconnect(self):
+        self.is_binded = False
+        try:
+            self.socket.close()
+        except (socket.error, OSError, ValueError):
+            pass
 
 def binary_to_dict(binary):
     """translate binary to dictionary"""
