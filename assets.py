@@ -224,6 +224,7 @@ class UserInterface:
                              (400, 475),
                              (400, 525)]
         self.server_ip_list = []
+        self.current_menu = "TITLE SCREEN"
 
     def text_render(self, text_name, font_name, color, surface, coordinate):
         """Render text_name to surface"""

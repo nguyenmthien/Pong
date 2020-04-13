@@ -8,39 +8,38 @@ import networking
 if __name__ == "__main__":
     UI = assets.UserInterface()
     ASSETS = assets.Assets()
-    CONTROL = controls.Control()
     NET = networking.Networking()
     while True:
-        while CONTROL.current_menu == "title screen":
-            CONTROL.title_screen(UI)
+        while UI.current_menu == "TITLE SCREEN":
+            controls.title_screen(UI)
             UI.title_screen(ASSETS)
-        while CONTROL.current_menu == "single player":
-            CONTROL.game_input(ASSETS)
+        while UI.current_menu == "SINGLE PLAYER":
+            controls.game_input(ASSETS, UI)
             ASSETS.ball.animation(ASSETS.opponent, ASSETS.player)
             ASSETS.player.animation()
             ASSETS.opponent.artificial_intelligence(ASSETS.ball.rect.y)
             ASSETS.draw_playing_field()
-        while CONTROL.current_menu == "local multiplayer":
-            CONTROL.local_multiplayer(ASSETS)
+        while UI.current_menu == "LOCAL MULTIPLAYER":
+            controls.local_multiplayer(ASSETS, UI)
             ASSETS.ball.animation(ASSETS.opponent, ASSETS.player)
             ASSETS.player.animation()
             ASSETS.opponent.animation()
             ASSETS.draw_playing_field()
-        while CONTROL.current_menu == "local network server":
+        while UI.current_menu == "HOST GAME":
             if NET.is_binded is False:
                 NET.init_server()
             if NET.is_binded is True and NET.is_game_running is False:
                 UI.wait_for_client(ASSETS, networking.LOCAL_IP)
                 NET.wait_for_client()
             while NET.is_game_running is True:
-                CONTROL.game_input(ASSETS)
+                controls.game_input(ASSETS, UI)
                 ASSETS.ball.animation(ASSETS.opponent, ASSETS.player)
                 ASSETS.player.animation()
                 ASSETS.opponent.animation()
                 SERVER_SEND = threading.Thread(target=NET.send_coordinates(ASSETS))
                 NET.recieve_controls(ASSETS)
                 ASSETS.draw_playing_field()
-        while CONTROL.current_menu == "local network client":
+        while UI.current_menu == "JOIN GAME":
             if NET.is_binded is False:
                 NET.init_client()
             if NET.is_binded is True and NET.is_game_running is False:
@@ -49,4 +48,4 @@ if __name__ == "__main__":
             while NET.is_game_running is True:
                 ASSETS.draw_client()
                 NET.receive_coordinates(ASSETS)
-                CONTROL.client(ASSETS, NET)
+                controls.client(ASSETS, NET, UI)

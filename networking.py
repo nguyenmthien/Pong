@@ -142,7 +142,7 @@ class Networking:
             self.socket.bind((LOCAL_IP, PORT_SERVER))
         except (ConnectionRefusedError, OSError):
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.bind((LOCAL_IP, PORT_SERVER))        
+            self.socket.bind((LOCAL_IP, PORT_SERVER))
         self.is_binded = True
         print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_SERVER}")
         self.socket.listen()
@@ -151,6 +151,7 @@ class Networking:
     def wait_for_client(self):
         """Wait and confirm the client"""
         # TODO: change to fit with client ritual
+        #       use select
         self.client_socket, self.client_address = self.socket.accept()
         self.client_socket.settimeout(0.5/assets.FPS)
         print(f"Conneted to client at {self.client_address}")
@@ -187,8 +188,8 @@ class Networking:
         binary = dict_to_binary(assets_obj.get_coordinates())
         try:
             self.client_socket.send(str.encode(binary))
-        except AttributeError:
-            pass
+        except AttributeError as msg:
+            print(msg)
 
     def receive_coordinates(self, assets_obj: assets.Assets):
         """Use in client, recive data from server and decode it"""
@@ -200,11 +201,12 @@ class Networking:
                 self.network_disconnect()
             else:
                 translated_binary = binary_to_dict(binary_decoded)
-                print(f"Recieved: {translated_binary}")
+                # print(f"Recieved: {translated_binary}")
                 if translated_binary:
                     assets_obj.set_coordinates(translated_binary)
-        except OSError:
+        except OSError as msg:
             self.network_disconnect()
+            print(msg)
 
     def send_controls(self, assets_obj: assets.Assets):
         """Use in client, send control to server"""
@@ -213,6 +215,8 @@ class Networking:
 
     def recieve_controls(self, assets_obj: assets.Assets):
         """Use in server, recieve control from client"""
+        # TODO: change to select
+        #       add logic branch to avoid set speed to 66 or -66
         try:
             control = self.client_socket.recv(5)
             control = control.decode('utf-8')
@@ -222,28 +226,30 @@ class Networking:
             else:
                 assets_obj.set_opponent_speed(int(control))
                 print(f"Recieved: {control}")
-        except socket.timeout:
-            pass
-        except ValueError:
-            pass
-        except OSError:
-            pass
-    
+        except socket.timeout as msg:
+            print(msg)
+        except ValueError as msg:
+            print(msg)
+        except OSError as msg:
+            print(msg)
+
     def end_hosting(self):
         self.is_binded = False
         self.is_game_running = False
         try:
             self.socket.shutdown(socket.SHUT_RDWR)
-        except (socket.error, OSError, ValueError):    
-            pass
+        except (socket.error, OSError, ValueError) as msg:
+            print(msg)
         self.socket.close()
 
     def network_disconnect(self):
         self.is_binded = False
+        self.is_game_running = False
         try:
             self.socket.close()
-        except (socket.error, OSError, ValueError):
-            pass
+        except (socket.error, OSError, ValueError) as msg:
+            print(msg)
+
 
 def binary_to_dict(binary):
     """translate binary to dictionary"""
