@@ -22,6 +22,10 @@ PORT_CLIENT = 2056
 RITUAL_STR_SERVER = "Jeder nach seinen Fähigkeiten, jedem nach seinen Bedürfnissen!"
 RITUAL_STR_CLIENT = "Proletarier aller Länder, vereinigt Euch!"
 
+# Number of maximum timeout allowed for the game
+# here we set it as 0.5 s
+TIMEOUT_COUNT_MAX = int(0.5*assets.FPS)
+
 
 class ScanIP:
     """Scan IP for ping-able hosts"""
@@ -162,6 +166,8 @@ class Networking:
             "is_binded"       : False,
             "is_scanning"     : False,
         }
+
+        self.timeout_count = 0
 
     def init_server(self):
         """Initialize socket in server mode"""
@@ -308,15 +314,19 @@ class Networking:
         """Connect client to server, given IP address"""
         try:
             self.socket.connect((ip_address, PORT_SERVER))
-        except OSError:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.bind((LOCAL_IP, PORT_CLIENT))
-            self.socket.connect((ip_address, PORT_SERVER))
+        except WindowsError as err:
+            if err.winerror != 10048:
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.socket.bind((LOCAL_IP, PORT_CLIENT))
+                self.socket.connect((ip_address, PORT_SERVER))
+        except socket.timeout:
+            pass
         finally:
             self.socket.recv(1024)
             self.socket.send(RITUAL_STR_CLIENT.encode('utf-8'))
             print(f"Conneted to server at {ip_address}:{PORT_SERVER}")
             self.flag['is_game_running'] = True
+            self.socket.settimeout(2/assets.FPS)
 
     def send_coordinates(self, assets_obj: assets.Assets, ui_obj: assets.UserInterface):
         """Send coordinates from assets_obj to client"""
@@ -342,19 +352,21 @@ class Networking:
             # print(f"Recieved: {translated_binary}")
             if translated_binary:
                 assets_obj.set_coordinates(translated_binary)
+                self.timeout_count = 0
         except OSError as msg:
-            self.network_disconnect(assets_obj, ui_obj)
-            print(msg)
-        except socket.timeout as msg:
-            self.network_disconnect(assets_obj, ui_obj)
-            print(msg)
+            self.timeout_count += 1
+            if self.timeout_count >= TIMEOUT_COUNT_MAX:
+                print(f"Disconnect due to timeout count = {self.timeout_count}")
+                self.network_disconnect(assets_obj, ui_obj)
+            print(f"{msg}: at netwoking.Networking.receive_coordinates")
+
 
     def send_controls(self, assets_obj: assets.Assets, ui_obj: assets.UserInterface):
         """Use in client, send control to server"""
         control = assets_obj.get_opponent_speed()
         try:
             self.socket.send(str(control).encode('utf-8'))
-        except ConnectionAbortedError:
+        except (ConnectionAbortedError, OSError):
             self.network_disconnect(assets_obj, ui_obj)
 
     def recieve_controls(self, assets_obj: assets.Assets, ui_obj: assets.UserInterface):
