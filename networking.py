@@ -23,8 +23,8 @@ RITUAL_STR_SERVER = "Jeder nach seinen Fähigkeiten, jedem nach seinen Bedürfni
 RITUAL_STR_CLIENT = "Proletarier aller Länder, vereinigt Euch!"
 
 # Number of maximum timeout allowed for the game
-# here we set it as 1 s
-TIMEOUT_COUNT_MAX = int(1*assets.FPS)
+# here we set it as 1.5 s
+TIMEOUT_COUNT_MAX = int(1.5*assets.FPS)
 
 
 class ScanIP:
@@ -203,7 +203,11 @@ class Networking:
                 self.client_socket, self.client_address = self.socket.accept()
                 self.client_socket.settimeout(10/assets.FPS)
                 self.client_socket.send(RITUAL_STR_SERVER.encode('utf-8'))
-                return_str = self.client_socket.recv(1024).decode('utf-8')
+                try:
+                    return_str = self.client_socket.recv(1024).decode('utf-8')
+                except OSError as msg:
+                    print(f"{msg} at wait_for_client")
+                    return
                 if return_str == RITUAL_STR_CLIENT:
                     print(f"Conneted to client at {self.client_address}")
                     self.client_socket.settimeout(0.5/assets.FPS)
@@ -326,7 +330,7 @@ class Networking:
             self.socket.send(RITUAL_STR_CLIENT.encode('utf-8'))
             print(f"Conneted to server at {ip_address}:{PORT_SERVER}")
             self.flag['is_game_running'] = True
-            self.socket.settimeout(2/assets.FPS)
+            self.socket.settimeout(1/assets.FPS)
 
     def send_coordinates(self, assets_obj: assets.Assets, ui_obj: assets.UserInterface):
         """Send coordinates from assets_obj to client"""
@@ -335,9 +339,17 @@ class Networking:
             self.client_socket.send(str.encode(binary))
         except AttributeError as msg:
             print(f"{msg} at send_coordinates")
-        except (socket.timeout, ConnectionAbortedError):
+        except socket.timeout as msg:
+            print(f"{msg} at send_coordinates")
+            self.timeout_count += 1
+            if self.timeout_count >= TIMEOUT_COUNT_MAX:
+                print(f"End hosting due to timeout_count={self.timeout_count}")
+                self.end_hosting(assets_obj, ui_obj)
+        except ConnectionAbortedError as msg:
+            print(f"{msg} at send_coordinates")
             self.end_hosting(assets_obj, ui_obj)
-            assets_obj.reset()
+        else:
+            self.timeout_count = 0
 
     def receive_coordinates(self, assets_obj: assets.Assets, ui_obj: assets.UserInterface):
         """Use in client, recive data from server and decode it"""
