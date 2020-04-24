@@ -6,7 +6,7 @@ import pygame
 #These are global assets constants. The names should self-explainatory
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-FPS = 60
+FPS = 30
 pygame.font.init()
 DISPLAY_FONT = pygame.font.Font('font.ttf', 80)
 UI_FONT2 = pygame.font.Font("font.ttf", 15)

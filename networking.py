@@ -24,7 +24,7 @@ RITUAL_STR_CLIENT = "Proletarier aller Länder, vereinigt Euch!"
 
 # Number of maximum timeout allowed for the game
 # here we set it as 1.5 s
-TIMEOUT_COUNT_MAX = int(1.5*assets.FPS)
+TIMEOUT_COUNT_MAX = int(3*assets.FPS)
 
 
 class ScanIP:
@@ -330,7 +330,7 @@ class Networking:
             self.socket.send(RITUAL_STR_CLIENT.encode('utf-8'))
             print(f"Conneted to server at {ip_address}:{PORT_SERVER}")
             self.flag['is_game_running'] = True
-            self.socket.settimeout(1/assets.FPS)
+            self.socket.settimeout(0.7/assets.FPS)
 
     def send_coordinates(self, assets_obj: assets.Assets, ui_obj: assets.UserInterface):
         """Send coordinates from assets_obj to client"""
@@ -370,7 +370,7 @@ class Networking:
             if self.timeout_count >= TIMEOUT_COUNT_MAX:
                 print(f"Disconnect due to timeout count = {self.timeout_count}")
                 self.network_disconnect(assets_obj, ui_obj)
-            print(f"{msg}: at netwoking.Networking.receive_coordinates")
+            print(f"{msg}: at receive_coordinates, count: {self.timeout_count}")
 
 
     def send_controls(self, assets_obj: assets.Assets, ui_obj: assets.UserInterface):
