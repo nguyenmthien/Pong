@@ -23,8 +23,8 @@ RITUAL_STR_SERVER = "Jeder nach seinen Fähigkeiten, jedem nach seinen Bedürfni
 RITUAL_STR_CLIENT = "Proletarier aller Länder, vereinigt Euch!"
 
 # Number of maximum timeout allowed for the game
-# here we set it as 0.5 s
-TIMEOUT_COUNT_MAX = int(0.5*assets.FPS)
+# here we set it as 1 s
+TIMEOUT_COUNT_MAX = int(1*assets.FPS)
 
 
 class ScanIP:
@@ -206,7 +206,6 @@ class Networking:
                 return_str = self.client_socket.recv(1024).decode('utf-8')
                 if return_str == RITUAL_STR_CLIENT:
                     print(f"Conneted to client at {self.client_address}")
-                    print(self.client_socket)
                     self.client_socket.settimeout(0.5/assets.FPS)
                     self.flag["is_game_running"] = True
                     return
@@ -315,6 +314,7 @@ class Networking:
         try:
             self.socket.connect((ip_address, PORT_SERVER))
         except WindowsError as err:
+            print(f"{err.winerror} at connect_to_server")
             if err.winerror != 10048:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.socket.bind((LOCAL_IP, PORT_CLIENT))
@@ -334,7 +334,7 @@ class Networking:
         try:
             self.client_socket.send(str.encode(binary))
         except AttributeError as msg:
-            print(msg)
+            print(f"{msg} at send_coordinates")
         except (socket.timeout, ConnectionAbortedError):
             self.end_hosting(assets_obj, ui_obj)
             assets_obj.reset()
@@ -385,9 +385,9 @@ class Networking:
         except socket.timeout:
             pass
         except ValueError as msg:
-            print(msg)
+            print(f"{msg} at recieve_controls")
         except OSError as msg:
-            print(msg)
+            print(f"{msg} at recieve_controls")
 
     def end_hosting(self, assets_obj: assets.Assets, ui_obj: assets.UserInterface):
         """Use in server to end multiplayer mode"""
@@ -398,7 +398,7 @@ class Networking:
         try:
             self.socket.shutdown(socket.SHUT_RDWR)
         except (socket.error, OSError, ValueError) as msg:
-            print(msg)
+            print(f"{msg} at end_hosting")
         self.socket.close()
 
     def network_disconnect(self, assets_obj: assets.Assets, ui_obj: assets.UserInterface):
@@ -410,7 +410,7 @@ class Networking:
         try:
             self.socket.close()
         except (socket.error, OSError, ValueError) as msg:
-            print(msg)
+            print(f"{msg} at network_disconnect")
 
 
 def binary_to_dict(binary):
@@ -433,16 +433,14 @@ if __name__ == "__main__":
     # all of these is only used for testing only.
     import time
     import pygame
-    RUNNING = False
     def ui_thread():
         """Thread for threading"""
-        while RUNNING:
+        while NET.flag["is_scanning"]:
             UI.wait_for_search(ASSETS)
             pygame.event.get()
     def net_thread():
         """Thread for threading"""
         NET.scan_for_server(SCAN_IP, UI)
-    RUNNING = True
     SCAN_IP = ScanIP()
     ASSETS = assets.Assets()
     UI = assets.UserInterface()
@@ -454,7 +452,6 @@ if __name__ == "__main__":
     UI_THR.start()
     NET_THR.start()
     NET_THR.join()
-    RUNNING = False
     UI_THR.join()
     T2 = time.time()
     UI.choose_server(ASSETS, NET.ip_result['found'])
