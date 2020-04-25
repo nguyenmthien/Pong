@@ -20,12 +20,14 @@ if __name__ == "__main__":
             ASSETS.player.animation()
             ASSETS.opponent.artificial_intelligence(ASSETS.ball.rect.y)
             ASSETS.draw_playing_field()
+            ASSETS.draw_indicators_ai()
         while UI.current_menu == "LOCAL MULTIPLAYER":
             controls.local_multiplayer(ASSETS, UI)
             ASSETS.ball.animation(ASSETS.opponent, ASSETS.player)
             ASSETS.player.animation()
             ASSETS.opponent.animation()
             ASSETS.draw_playing_field()
+            ASSETS.draw_indicators()
         while UI.current_menu == "HOST GAME":
             if NET.flag['is_binded'] is False:
                 NET.init_server()
@@ -42,6 +44,7 @@ if __name__ == "__main__":
                 SERVER_SEND.start()
                 NET.recieve_controls(ASSETS, UI)
                 ASSETS.draw_playing_field()
+                ASSETS.draw_indicators()
         while UI.current_menu == "JOIN GAME":
             if NET.flag['is_binded'] is False:
                 NET.init_client()
@@ -56,5 +59,6 @@ if __name__ == "__main__":
                 controls.choose_server(ASSETS, UI, NET, IP_SCANNER)
             while NET.flag['is_game_running'] is True:
                 ASSETS.draw_client()
+                ASSETS.draw_indicators()                
                 NET.receive_coordinates(ASSETS, UI)
                 controls.client(ASSETS, NET, UI)

@@ -23,7 +23,6 @@ COLOR = {
 class Assets:
     """Default assets class"""
     def __init__(self):
-
         pygame.init()
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # screen display
@@ -42,8 +41,17 @@ class Assets:
                            COLOR['light_grey'],
                            (SCREEN_WIDTH / 2, 0),
                            (SCREEN_WIDTH / 2, SCREEN_HEIGHT))  # draw middle line
-        self.screen.blit(self.player.score, (int(3/4*SCREEN_WIDTH - 20), 20))
-        self.screen.blit(self.opponent.score, (int(SCREEN_WIDTH/4 - 20), 20))
+        self.screen.blit(self.player.score, (int(1/2*SCREEN_WIDTH+30), 20))
+        self.screen.blit(self.opponent.score, (int(1/2*SCREEN_WIDTH-60), 20))
+
+    def draw_indicators_ai(self):
+        self.screen.blit(self.player.indicator_p1, (int(1/2*SCREEN_WIDTH+30), 520))
+        self.screen.blit(self.player.indicator_com, (int(1/2*SCREEN_WIDTH-100), 520)) 
+        self.maintain_fps()
+    
+    def draw_indicators(self):
+        self.screen.blit(self.player.indicator_p1, (int(1/2*SCREEN_WIDTH+30), 520))
+        self.screen.blit(self.player.indicator_p2, (int(1/2*SCREEN_WIDTH-100), 520)) 
         self.maintain_fps()
 
     def draw_client(self):
@@ -62,8 +70,8 @@ class Assets:
         self.opponent.score = DISPLAY_FONT.render(str(self.opponent.score_value),
                                                   1,
                                                   COLOR['light_grey'])
-        self.screen.blit(self.player.score, (int(3/4*SCREEN_WIDTH - 20), 20))
-        self.screen.blit(self.opponent.score, (int(SCREEN_WIDTH/4 - 20), 20))
+        self.screen.blit(self.player.score, (int(1/2*SCREEN_WIDTH+30), 20))
+        self.screen.blit(self.opponent.score, (int(1/2*SCREEN_WIDTH-60), 20))
         pygame.display.flip()
 
     def maintain_fps(self):
@@ -123,6 +131,15 @@ class Paddle:
         self.score = DISPLAY_FONT.render(str(self.score_value),
                                          1,
                                          COLOR["light_grey"])
+        self.indicator_p1 = DISPLAY_FONT.render("P1",
+                                         1,
+                                         COLOR['light_grey'])                                     
+        self.indicator_com = DISPLAY_FONT.render("ai",
+                                         1,
+                                         COLOR['light_grey'])
+        self.indicator_p2 = DISPLAY_FONT.render("P2",
+                                         1,
+                                         COLOR['light_grey'])    
 
     def animation(self):
         """Animation of player"""
@@ -334,6 +351,7 @@ class UserInterface:
                          asset_obj.screen,
                          (400, 300))
         asset_obj.maintain_fps()
+
 
 if __name__ == '__main__':
     ASSETS = Assets()
