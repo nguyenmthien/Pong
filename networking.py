@@ -136,7 +136,7 @@ class Networking:
         # print(host_list)
         threads = []
         for ip_list in host_list:
-            # Due to the format of the ip_base: [[ip_list1], [ip_list2], ...], 
+            # Due to the format of the ip_base: [[ip_list1], [ip_list2], ...],
             # we now loop twice to find the ip, then pass it for validation
 
             for ip_addr in ip_list:
