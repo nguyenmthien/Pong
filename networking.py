@@ -132,12 +132,12 @@ class Networking:
         ui_obj.choice = 0
 
         host_list = get_ip_base()
-        print(f"Found these hosts on the local network:")
-        print(host_list)
+        # print(f"Found these hosts on the local network:")
+        # print(host_list)
         threads = []
         for ip_list in host_list:
-            # Due to the format of the ip_base: [1.2.3.1-254], we now split the addr to four
-            # lists p_1 to p_4, by ".", and the indexes in each p by "-" for us to loop.
+            # Due to the format of the ip_base: [[ip_list1], [ip_list2], ...], 
+            # we now loop twice to find the ip, then pass it for validation
 
             for ip_addr in ip_list:
                 thrd = threading.Thread(target=self.find_server_ritual,
@@ -167,15 +167,12 @@ class Networking:
             scan_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             scan_sock.settimeout(2)
             scan_sock.connect((ip_addr, PORT_SERVER))
-
         except ConnectionRefusedError:
             self.ip_result['notfound'].append(ip_addr)
             return
-
         except socket.timeout:
             self.ip_result['timeout'].append(ip_addr)
             return
-
         else:
             ritual = scan_sock.recv(1024).decode('utf-8')
             scan_sock.close()
