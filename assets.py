@@ -37,21 +37,22 @@ class Assets:
         pygame.draw.rect(self.screen, COLOR["light_grey"], self.player.rect)  # draw player 1
         pygame.draw.rect(self.screen, COLOR['light_grey'], self.opponent.rect)  # draw player 2
         pygame.draw.rect(self.screen, COLOR['light_grey'], self.ball.rect)  # draw ball
-        pygame.draw.aaline(self.screen,
+        pygame.draw.line(self.screen,
                            COLOR['light_grey'],
                            (SCREEN_WIDTH / 2, 0),
-                           (SCREEN_WIDTH / 2, SCREEN_HEIGHT))  # draw middle line
-        self.screen.blit(self.player.score, (int(1/2*SCREEN_WIDTH+30), 20))
-        self.screen.blit(self.opponent.score, (int(1/2*SCREEN_WIDTH-60), 20))
+                           (SCREEN_WIDTH / 2, SCREEN_HEIGHT),
+                           9)  # draw middle line
+        self.screen.blit(self.player.score, (int(1/2*SCREEN_WIDTH+20), 20))
+        self.screen.blit(self.opponent.score, (int(1/2*SCREEN_WIDTH-90), 20))
 
     def draw_indicators_ai(self):
-        self.screen.blit(self.player.indicator_p1, (int(1/2*SCREEN_WIDTH+30), 520))
-        self.screen.blit(self.player.indicator_com, (int(1/2*SCREEN_WIDTH-100), 520)) 
+        self.screen.blit(self.player.indicator_p1, (int(1/2*SCREEN_WIDTH+20), 520))
+        self.screen.blit(self.player.indicator_com, (int(1/2*SCREEN_WIDTH-90), 520))
         self.maintain_fps()
     
     def draw_indicators(self):
-        self.screen.blit(self.player.indicator_p1, (int(1/2*SCREEN_WIDTH+30), 520))
-        self.screen.blit(self.player.indicator_p2, (int(1/2*SCREEN_WIDTH-100), 520)) 
+        self.screen.blit(self.player.indicator_p1, (int(1/2*SCREEN_WIDTH+20), 520))
+        self.screen.blit(self.player.indicator_p2, (int(1/2*SCREEN_WIDTH-90), 520)) 
         self.maintain_fps()
 
     def draw_client(self):
@@ -60,18 +61,19 @@ class Assets:
         pygame.draw.rect(self.screen, COLOR['light_grey'], self.player.rect) # draw player 1
         pygame.draw.rect(self.screen, COLOR['light_grey'], self.opponent.rect) # draw player 2
         pygame.draw.rect(self.screen, COLOR['light_grey'], self.ball.rect)  # draw ball
-        pygame.draw.aaline(self.screen,
+        pygame.draw.line(self.screen,
                            COLOR['light_grey'],
                            (SCREEN_WIDTH / 2, 0),
-                           (SCREEN_WIDTH / 2, SCREEN_HEIGHT)) # draw middle line
+                           (SCREEN_WIDTH / 2, SCREEN_HEIGHT),
+                           9) # draw middle line
         self.player.score = DISPLAY_FONT.render(str(self.player.score_value),
                                                 1,
                                                 COLOR['light_grey'])
         self.opponent.score = DISPLAY_FONT.render(str(self.opponent.score_value),
                                                   1,
                                                   COLOR['light_grey'])
-        self.screen.blit(self.player.score, (int(1/2*SCREEN_WIDTH+30), 20))
-        self.screen.blit(self.opponent.score, (int(1/2*SCREEN_WIDTH-60), 20))
+        self.screen.blit(self.player.score, (int(1/2*SCREEN_WIDTH+60), 20))
+        self.screen.blit(self.opponent.score, (int(1/2*SCREEN_WIDTH-90), 20))
         pygame.display.flip()
 
     def maintain_fps(self):
