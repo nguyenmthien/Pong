@@ -3,8 +3,7 @@
 import sys
 import pygame
 import assets
-import ui
-
+import networking
 
 class Control:
     """All controls for game"""
@@ -35,10 +34,11 @@ class Control:
                 if event.key == pygame.K_DOWN:
                     asset_class.player.speed -= asset_class.player.control_speed
 
-    def title_screen(self, ui_class: ui.UserInterface):
+    def title_screen(self, ui_class: assets.UserInterface):
         """Title screen input handler"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                print("exit game")
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
@@ -58,7 +58,11 @@ class Control:
                     if ui_class.selection_list[ui_class.choice] == "HOST GAME":
                         print("start host game")
                         self.current_menu = "local network server"
+                    if ui_class.selection_list[ui_class.choice] == "JOIN GAME":
+                        print("start client")
+                        self.current_menu = "local network client"
                     if ui_class.selection_list[ui_class.choice] == "QUIT":
+                        print("exit game")
                         pygame.quit()
                         sys.exit()
 
@@ -94,7 +98,7 @@ class Control:
                 if event.key == pygame.K_s:
                     asset_class.opponent.speed -= asset_class.opponent.control_speed
 
-    def client(self, asset_class: assets.Assets):
+    def client(self, asset_class: assets.Assets, networking_class: networking.Networking):
         """Client mode input handler"""
         asset_class.opponent.previous_speed = asset_class.opponent.speed
         for event in pygame.event.get():
@@ -118,5 +122,20 @@ class Control:
                     asset_class.opponent.reset()
                     asset_class.ball.start()
 
-            if asset_class.opponent.speed == asset_class.opponent.previous_speed:
-                pass
+            if asset_class.opponent.speed != asset_class.opponent.previous_speed:
+                networking_class.send_controls(asset_class)
+
+    def wait(self, asset_class: assets.Assets):
+        """waiting screen input handler"""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.current_menu = "title screen"
+                    print("end hosting")
+                    asset_class.player.reset()
+                    asset_class.opponent.reset()
+                    asset_class.ball.start()
+                    #TODO: end hosting
