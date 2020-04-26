@@ -129,8 +129,7 @@ def wait_for_client(assets_obj: assets.Assets,
 
 def choose_server(assets_obj: assets.Assets,
                   ui_obj: assets.UserInterface,
-                  networking_obj: networking.Networking,
-                  ip_scanner: networking.ScanIP):
+                  networking_obj: networking.Networking):
     """Choose server screen input handler"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -153,7 +152,7 @@ def choose_server(assets_obj: assets.Assets,
                 return
             if event.key == pygame.K_F5:
                 scan_thr = threading.Thread(target=networking_obj.scan_for_server,
-                                            args=[ip_scanner, ui_obj])
+                                            args=[ui_obj])
                 scan_thr.start()
                 return
             if event.key == pygame.K_ESCAPE:
