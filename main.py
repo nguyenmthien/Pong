@@ -9,7 +9,6 @@ if __name__ == "__main__":
     UI = assets.UserInterface()
     ASSETS = assets.Assets()
     NET = networking.Networking()
-    IP_SCANNER = networking.ScanIP()
     while True:
         while UI.current_menu == "TITLE SCREEN":
             controls.title_screen(UI)
@@ -48,7 +47,8 @@ if __name__ == "__main__":
         while UI.current_menu == "JOIN GAME":
             if NET.flag['is_binded'] is False:
                 NET.init_client()
-                SCAN_THR = threading.Thread(target=NET.scan_for_server, args=[IP_SCANNER, UI])
+                SCAN_THR = threading.Thread(target=NET.scan_for_server, args=[
+                    UI])
                 SCAN_THR.start()
             if NET.flag['is_scanning']:
                 UI.wait_for_search(ASSETS)
@@ -56,7 +56,7 @@ if __name__ == "__main__":
                     not NET.flag['is_game_running'] and
                     not NET.flag['is_scanning']):
                 UI.choose_server(ASSETS, NET.ip_result['found'])
-                controls.choose_server(ASSETS, UI, NET, IP_SCANNER)
+                controls.choose_server(ASSETS, UI, NET)
             while NET.flag['is_game_running'] is True:
                 ASSETS.draw_client()
                 ASSETS.draw_indicators()                

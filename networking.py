@@ -1,4 +1,5 @@
 """Networking functionalities"""
+import ipaddress
 import json
 import os
 import select
@@ -26,123 +27,7 @@ RITUAL_STR_CLIENT = "Proletarier aller Länder, vereinigt Euch!"
 # here we set it as 1.5 s
 TIMEOUT_COUNT_MAX = int(3*assets.FPS)
 
-
-class ScanIP:
-    """Scan IP for ping-able hosts"""
-    # This class is unneccessary now, due to it poor perfomance
-    # TODO: remove this class and add function to list possible ips addr
-    def __init__(self):
-        self.fnull = open(os.devnull, 'w')
-        self.is_on_posix = os.name == 'posix'
-        self.show_mac = False
-        self.use_arp = False
-
-        self.known_arp_errors_posix = ['-- no entry', '(incomplete)']
-        self.known_arp_errors_nt = ['No ARP Entries Found.']
-
-    def mac_for_ip(self, ip_addr):
-        """Return MAC address from parsing arp"""
-        if self.is_on_posix:
-            output = subprocess.check_output(['arp', '-n', ip_addr]).decode('ascii')
-            for i in self.known_arp_errors_posix:
-                if i in output:
-                    raise Exception()
-            return output.split()[3]
-
-        output = subprocess.check_output(['arp', '-a', ip_addr]).decode('ascii')
-        return output.splitlines()[3].split()[1].replace('-', ':')
-
-    def scan_ip_addr(self, ip_addr):
-        """Scan IP address using arp or ping"""
-        if self.use_arp:
-            if self.is_on_posix:
-                output = subprocess.check_output(['arp', '-n', ip_addr],
-                                                 stderr=subprocess.STDOUT).decode('ascii')
-                for i in self.known_arp_errors_posix:
-                    if i in output:
-                        return False
-                return True
-
-            output = subprocess.check_output(['arp', '-a', ip_addr],
-                                             stderr=subprocess.STDOUT).decode('ascii')
-            for i in self.known_arp_errors_nt:
-                if i in output:
-                    return False
-            return True
-
-        if self.is_on_posix:
-            return not subprocess.call(['ping', '-c', '1', '-t', '1', ip_addr],
-                                       stdout=self.fnull,
-                                       stderr=subprocess.STDOUT)
-
-        return not subprocess.call(['ping', '-n', '1', '-w', '10', ip_addr],
-                                   stdout=self.fnull,
-                                   stderr=subprocess.STDOUT)
-
-    def ip_thread(self, ip_addr, ips):
-        """Thread for multithreading"""
-        if self.scan_ip_addr(ip_addr):
-            try:
-                host, _, _ = socket.gethostbyaddr(ip_addr)
-            except socket.herror:
-                host = ''
-            res = [ip_addr, host]
-            if self.show_mac:
-                try:
-                    mac_addr = mac_for_ip(ip_addr)
-                except:  # pylint: disable=W0702
-                    mac_addr = ''
-                res.append(mac_addr)
-            ips.append(res)
-
-    def get_ip_base(self):
-        """Find IP base for scanning"""
-        ip_base = []
-        if not ip_base:
-            if self.is_on_posix:
-                broadcast = []
-                ifconfig = subprocess.check_output('ifconfig').decode('ascii').splitlines()
-                for i in ifconfig:
-                    if 'broadcast' in i:
-                        broadcast = i.split('broadcast')[1].strip()
-                        ip_base.append('.'.join(broadcast.split('.')[:-1]) + '.1-254')
-            else:
-                ipconfig = subprocess.check_output('ipconfig').decode('ascii').splitlines()
-                for i in ipconfig:
-                    if 'IPv4 Address' in i:
-                        broadcast = i.split()[-1].strip()
-                        ip_base.append('.'.join(broadcast.split('.')[:-1]) + '.1-254')
-        return ip_base
-
-    def main(self, ips):
-        """Return list of available [IP, hostname, (MAC)]"""
-        all_threads = []
-        accepted_ips = []
-        socket.setdefaulttimeout(0.01)
-        for ip_addr in ips:
-            p_1, p_2, p_3, p_4 = [[int(y) for y in x.split('-')] for x in ip_addr.split('.')]
-            for p_i in (p_1, p_2, p_3, p_4):
-                if len(p_i) == 1:
-                    p_i.append(p_i[0]+1)
-                else:
-                    p_i[1] += 1
-
-            for i_1 in range(p_1[0], p_1[1]):
-                for i_2 in range(p_2[0], p_2[1]):
-                    for i_3 in range(p_3[0], p_3[1]):
-                        for i_4 in range(p_4[0], p_4[1]):
-                            temp = threading.Thread(target=self.ip_thread,
-                                                    args=(f'{i_1}.{i_2}.{i_3}.{i_4}', accepted_ips))
-                            all_threads.append(temp)
-                            temp.start()
-        while True:
-            for i in all_threads:
-                if i.is_alive():
-                    break
-            else:
-                break
-
-        return accepted_ips
+IS_ON_POSIX = os.name == 'posix'
 
 
 class Networking:
@@ -229,7 +114,7 @@ class Networking:
             self.flag["is_binded"] = True
         print(f"Binded a TCP socket to {LOCAL_IP}:{PORT_CLIENT}")
 
-    def scan_for_server(self, ip_scanner: ScanIP, ui_obj: assets.UserInterface):
+    def scan_for_server(self, ui_obj: assets.UserInterface):
         """Scan for available IPs and pass it to self.server_list"""
 
         # We use the IP scanner to find the list of possible host,
@@ -246,30 +131,19 @@ class Networking:
 
         ui_obj.choice = 0
 
-        host_list = ip_scanner.get_ip_base()
-        print(f"Found these hosts on the local network:")
-        print(host_list)
+        host_list = get_ip_base()
+        # print(f"Found these hosts on the local network:")
+        # print(host_list)
         threads = []
-        for ip_addr in host_list:
-            # Due to the format of the ip_base: [1.2.3.1-254], we now split the addr to four
-            # lists p_1 to p_4, by ".", and the indexes in each p by "-" for us to loop.
-            # Remember to change this when the search funtion is done.
+        for ip_list in host_list:
+            # Due to the format of the ip_base: [[ip_list1], [ip_list2], ...],
+            # we now loop twice to find the ip, then pass it for validation
 
-            p_1, p_2, p_3, p_4 = [[int(y) for y in x.split('-')] for x in ip_addr.split('.')]
-            for p_i in (p_1, p_2, p_3, p_4):
-                if len(p_i) == 1:
-                    p_i.append(p_i[0]+1)
-                else:
-                    p_i[1] += 1
-
-            for i_1 in range(p_1[0], p_1[1]):
-                for i_2 in range(p_2[0], p_2[1]):
-                    for i_3 in range(p_3[0], p_3[1]):
-                        for i_4 in range(p_4[0], p_4[1]):
-                            thrd = threading.Thread(target=self.find_server_ritual,
-                                                    args=[f"{i_1}.{i_2}.{i_3}.{i_4}"])
-                            thrd.start()
-                            threads.append(thrd)
+            for ip_addr in ip_list:
+                thrd = threading.Thread(target=self.find_server_ritual,
+                                        args=[ip_addr])
+                thrd.start()
+                threads.append(thrd)
 
         for thread in threads:
             thread.join()
@@ -293,15 +167,12 @@ class Networking:
             scan_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             scan_sock.settimeout(2)
             scan_sock.connect((ip_addr, PORT_SERVER))
-
         except ConnectionRefusedError:
             self.ip_result['notfound'].append(ip_addr)
             return
-
         except socket.timeout:
             self.ip_result['timeout'].append(ip_addr)
             return
-
         else:
             ritual = scan_sock.recv(1024).decode('utf-8')
             scan_sock.close()
@@ -345,7 +216,9 @@ class Networking:
             if self.timeout_count >= TIMEOUT_COUNT_MAX:
                 print(f"End hosting due to timeout_count={self.timeout_count}")
                 self.end_hosting(assets_obj, ui_obj)
-        except ConnectionAbortedError as msg:
+        except (ConnectionAbortedError,
+                ConnectionRefusedError,
+                ConnectionResetError) as msg:
             print(f"{msg} at send_coordinates")
             self.end_hosting(assets_obj, ui_obj)
         else:
@@ -441,6 +314,68 @@ def dict_to_binary(dictionary):
     return binary
 
 
+def ip2bin(ip_addr):
+    """Convert IP address to binary"""
+    octets = map(int, ip_addr.split('/')[0].split('.'))
+    binary = '{0:08b}{1:08b}{2:08b}{3:08b}'.format(*octets)
+    range_bin = int(ip_addr.split('/')[1]) if '/' in ip_addr else None
+    return binary[:range_bin] if range_bin else binary
+
+
+def get_prefix(binary):
+    """Get the prefix of Subnet Mask"""
+    prefix_count = 0
+    for i in binary:
+        if i == '1':
+            prefix_count += 1
+    return prefix_count
+
+
+def get_ip_base():
+    """Get list of IP in Network"""
+    ip_addr = []
+    subnet_mask = []
+    if len(ip_addr) == 0:
+        if IS_ON_POSIX:
+            broadcast = []
+            box = []
+            ifconfig = subprocess.check_output('ifconfig').decode('ascii').splitlines()
+            for i in ifconfig:
+                if 'broadcast' in i:
+                    broadcast = i.split('broadcast')[1].strip()
+                    ip_addr.append('.'.join(broadcast.split('.')[:-1]) + '.0')
+                if 'Mask' in i:
+                    box = i.split()[-1].strip()
+                    subnet_mask.append(box)
+        else:
+            ipconfig = subprocess.check_output('ipconfig').decode('ascii').splitlines()
+            for i in ipconfig:
+                if 'IPv4 Address' in i:
+                    broadcast = i.split()[-1].strip()
+                    ip_addr.append('.'.join(broadcast.split('.')[:-1]) + '.0')
+                if 'Subnet Mask' in i:
+                    box = i.split()[-1].strip()
+                    subnet_mask.append(box)
+
+    ip_base = []
+    for i, subnet in enumerate(subnet_mask):
+        prefixlen = str(get_prefix(ip2bin(subnet)))
+        ip_add = ip_addr[i]
+        ip_base.append(ip_add + '/' + prefixlen)
+
+    j = 0
+    list_ip = []
+    for i, _ in enumerate(ip_base):
+        list_ip.append(list(ipaddress.ip_network(ip_base[j]).hosts()))
+        j = j+1
+
+    for i, ip_list in enumerate(list_ip):                   #Convert ip in list_ip to string
+        for j, addr in enumerate(ip_list):
+            list_ip[i][j] = str(addr)
+
+    return list_ip
+
+
 if __name__ == "__main__":
     # all of these is only used for testing only.
     import time
@@ -452,8 +387,7 @@ if __name__ == "__main__":
             pygame.event.get()
     def net_thread():
         """Thread for threading"""
-        NET.scan_for_server(SCAN_IP, UI)
-    SCAN_IP = ScanIP()
+        NET.scan_for_server(UI)
     ASSETS = assets.Assets()
     UI = assets.UserInterface()
     NET = Networking()
