@@ -59,6 +59,6 @@ if __name__ == "__main__":
                 controls.choose_server(ASSETS, UI, NET)
             while NET.flag['is_game_running'] is True:
                 ASSETS.draw_client()
-                ASSETS.draw_indicators()                
+                ASSETS.draw_indicators()
                 NET.receive_coordinates(ASSETS, UI)
                 controls.client(ASSETS, NET, UI)
